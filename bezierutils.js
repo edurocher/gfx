@@ -1,5 +1,5 @@
 define([
-	"./_base"
+	"./_utils"
 ], function (gfx) {
 
 	var bu = gfx.bezierutils = {}, error = 0.1;

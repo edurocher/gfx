@@ -1,5 +1,5 @@
 ﻿define([
-	"intern!object", "intern/chai!assert", "dcl/dcl", "../utils/testUtils", "gfx/gfx", "dcolor/ExtendedColor"
+	"intern!object", "intern/chai!assert", "dcl/dcl", "../utils/testUtils", "dcolor/ExtendedColor"
 ], function (registerSuite, assert, dcl, tu) {
 
 	var surface;
@@ -27,13 +27,13 @@
 				]
 			};
 			// create a background
-			surface.createRect({width: 300, height: 300}).fill = "lightgrey";
+			new tu.Rect({width: 300, height: 300}, surface).fill = "lightgrey";
 
 			// create a rect
-			rect = surface.createRect({
+			rect = new tu.Rect({
 				width: 300,
 				height: 100
-			});
+			}, surface);
 			var fill = {
 				type: "linear",
 				x1: 0,
@@ -44,12 +44,12 @@
 			dcl.mix(fill, fillObj);
 			rect.fill = fill;
 			// create a circle
-			var circle = surface.createEllipse({
+			var circle = new tu.Ellipse({
 				cx: 150,
 				cy: 200,
 				rx: 100,
 				ry: 100
-			});
+			}, surface);
 			fill = {
 				type: "radial",
 				cx: 150,
@@ -96,17 +96,17 @@
 					{ offset: 0.3, color: "yellow" }
 				]
 			};
-			var group = surface.createGroup();
-			var rect1 = surface.createRect({
+			var group = new tu.Group(surface);
+			var rect1 = new tu.Rect({
 				width: 300,
 				height: 100
-			});
+			}, surface);
 			rect1.fill = lg1;
-			var rect2 = surface.createRect({
+			var rect2 = new tu.Rect({
 				y: 150,
 				width: 300,
 				height: 100
-			});
+			}, surface);
 			rect2.fill = lg2;
 			group.add(rect1);
 			group.add(rect2);

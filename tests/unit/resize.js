@@ -1,5 +1,5 @@
 ﻿define([
-	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx"
+	"require", "intern!object", "intern/chai!assert", "../utils/testUtils"
 ], function (require, registerSuite, assert, tu) {
 
 	var surface;
@@ -10,10 +10,10 @@
 			surface = tu.createSurface(500, 500);
 
 			var rect;
-			rect = surface.createRect({width: 300, height: 300});
+			rect = new tu.Rect({width: 300, height: 300}, surface);
 			rect.fill = [255, 0, 0, 0.3];
 			rect.stroke = "red";
-			rect = surface.createRect({x: 200, y: 200, width: 300, height: 300});
+			rect = new tu.Rect({x: 200, y: 200, width: 300, height: 300}, surface);
 			rect.fill = [0, 0, 255, 0.3];
 			rect.stroke = "green";
 		},

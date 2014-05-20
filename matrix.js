@@ -1,4 +1,4 @@
-define(["dcl/dcl", "./_base", "dojo/_base/lang"], function (dcl, g, lang) {
+define(["dcl/dcl", "./_utils", "dojo/_base/lang"], function (dcl, g, lang) {
 	var m = g.matrix = {};
 
 	var _degToRadCache = {};

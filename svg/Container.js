@@ -1,5 +1,5 @@
 define([
-	"dcl/dcl", "../shape/_ContainerBase", "./_base"
+	"dcl/dcl", "../shape/_ContainerBase", "./_utils"
 ], function (dcl, ContainerBase, svg) {
 	return dcl([ContainerBase], {
 		openBatch: function () {

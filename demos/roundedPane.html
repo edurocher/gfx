@@ -10,8 +10,9 @@
     <script type="text/javascript">
         require([
             "dojo/_base/declare", "dojo/ready", "dojo/dom-geometry", "dojo/dom-style", "dojo/query",
-            "dijit/layout/ContentPane", "dijit/_TemplatedMixin", "gfx/gfx", "dojo/dnd/TimedMoveable"
-        ], function (declare, ready, domGeometry, domStyle, query, ContentPane, Templated, gfx, TimedMoveable) {
+            "dijit/layout/ContentPane", "dijit/_TemplatedMixin", "gfx/Surface", "gfx/Rect", "dojo/dnd/TimedMoveable"
+        ], function (declare, ready, domGeometry, domStyle, query, ContentPane, Templated, Surface, Rect, TimedMoveable
+                ) {
 
             declare("my.RoundedContentPane", [ContentPane, Templated], {
                 // radius: Integer
@@ -26,7 +27,8 @@
                 handle: ".handle",
 
                 // template:
-                templateString: '<div><div style="position:relative;">' + '<div data-dojo-attach-point="surfaceNode"></div>' +
+                templateString: '<div><div style="position:relative;">' +
+                        '<div data-dojo-attach-point="surfaceNode"></div>' +
                         '<div data-dojo-attach-point="containerNode"></div>' + '</div></div>',
 
                 startup: function () {
@@ -54,12 +56,12 @@
                     var s = domGeometry.getMarginBox(this.domNode);
                     var stroke = 2;
 
-                    this.surface = gfx.createSurface(this.surfaceNode, s.w + stroke * 2, s.h + stroke * 2);
-                    this.roundedShape = this.surface.createRect({
+                    this.surface = new Surface(this.surfaceNode, s.w + stroke * 2, s.h + stroke * 2);
+                    this.roundedShape = new Rect({
                         r: this.radius,
                         width: s.w,
                         height: s.h
-                    });
+                    }, this.surface);
                     this.roundedShape.fill = [0, 0, 0, 0.5]; // black, 50% transparency
                     this.roundedShape.stroke = { color: [255, 255, 255, 1], width: stroke }; // solid white
 

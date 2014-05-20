@@ -1,13 +1,17 @@
 define([
-	"dojo/_base/lang", "dojo/dom", "dcl/dcl", "dojo/sniff", "dojo/dom-geometry", "dcolor/Color", "../_base", "./_base",
-	"../shape/_ShapeBase", "./Surface"
-], function (lang, dom, dcl, has, domGeom, Color, g, svg, ShapeBase, SvgSurface) {
+	"dojo/_base/lang", "dojo/dom", "dcl/dcl", "dojo/sniff", "dojo/dom-geometry", "dcolor/Color", "../_utils", "./_utils",
+	"../shape/_ShapeBase"
+], function (lang, dom, dcl, has, domGeom, Color, g, svg, ShapeBase) {
 
 	var clipCount = 0;
 
 	return dcl(ShapeBase, {
 		// summary:
 		//		SVG-specific implementation of gfx/shape.Shape methods
+
+		// renderer: String
+		//		The underlying renderer used by this shape: "svg".
+		renderer: "svg",
 
 		createRawNode: function () {
 			// summary: Creates a new SVG shape.
@@ -64,17 +68,17 @@ define([
 				// gradient
 				switch (fill.type) {
 				case "linear":
-					f = g.makeParameters(g.defaultLinearGradient, fill);
+					f = g._makeParameters(ShapeBase.defaultLinearGradient, fill);
 					var gradient = this._setFillObject(f, "linearGradient");
 					["x1", "y1", "x2", "y2"].forEach(setter, gradient);
 					break;
 				case "radial":
-					f = g.makeParameters(g.defaultRadialGradient, fill);
+					f = g._makeParameters(ShapeBase.defaultRadialGradient, fill);
 					var grad = this._setFillObject(f, "radialGradient");
 					["cx", "cy", "r"].forEach(setter, grad);
 					break;
 				case "pattern":
-					f = g.makeParameters(g.defaultPattern, fill);
+					f = g._makeParameters(ShapeBase.defaultPattern, fill);
 					var pattern = this._setFillObject(f, "pattern");
 					["x", "y", "width", "height"].forEach(setter, pattern);
 					break;
@@ -83,7 +87,7 @@ define([
 				return this;
 			}
 			// color object
-			f = g.normalizeColor(fill);
+			f = g._normalizeColor(fill);
 			this._set("fill", f);
 			this.rawNode.setAttribute("fill", f.toRgbaString());
 			this.rawNode.setAttribute("fill-opacity", f.a);
@@ -110,8 +114,8 @@ define([
 			if (typeof stroke === "string" || lang.isArray(stroke) || stroke instanceof Color) {
 				stroke = { color: stroke };
 			}
-			var s = g.makeParameters(g.defaultStroke, stroke);
-			s.color = g.normalizeColor(s.color);
+			var s = g._makeParameters(ShapeBase.defaultStroke, stroke);
+			s.color = g._normalizeColor(s.color);
 			this._set("stroke", s);
 			// generate attributes
 			if (s) {
@@ -155,7 +159,7 @@ define([
 
 		_getParentSurface: function () {
 			var surface = this.parent;
-			for (; surface && !(surface instanceof SvgSurface); surface = surface.parent) {
+			for (; surface && !(surface._isSurface); surface = surface.parent) {
 			}
 			return surface;
 		},
@@ -204,7 +208,7 @@ define([
 				fill.setAttribute("gradientUnits", "userSpaceOnUse");
 				for (var i = 0; i < f.colors.length; ++i) {
 					var c = f.colors[i], t = svg._createElementNS(svgns, "stop"), cc = c.color =
-						g.normalizeColor(c.color);
+						g._normalizeColor(c.color);
 					t.setAttribute("offset", c.offset.toFixed(8));
 					t.setAttribute("stop-color", cc.toRgbaString());
 					t.setAttribute("stop-opacity", cc.a);
@@ -276,7 +280,7 @@ define([
 			//		gfx.defaultCircle,
 			//		gfx.defaultLine,
 			//		or gfx.defaultImage)
-			this._set("shape", g.makeParameters(this.shape, newShape));
+			this._set("shape", g._makeParameters(this.shape, newShape));
 			for (var i in this.shape) {
 				if (i !== "type") {
 					this.rawNode.setAttribute(i, this.shape[i]);

@@ -1,6 +1,6 @@
 ﻿define([
-	"intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx", "gfx/matrix", "dcolor/Color"
-], function (registerSuite, assert, tu, gfx, matrix, Color) {
+	"intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/matrix", "dcolor/Color"
+], function (registerSuite, assert, tu, matrix, Color) {
 
 	var surface, rect = { x: 0, y: 0, width: 100, height: 100 };
 
@@ -14,7 +14,7 @@
 		var name = "All shapes, using " + suffix;
 		return {
 			name: name,
-			afterEach: function() {
+			afterEach: function () {
 				tu.destroySurface(surface);
 			},
 			"rect": function () {
@@ -415,15 +415,13 @@
 		};
 	};
 
-	tu.registerSuite(getSuite("constructors", function create(container, shapeType, shapeObj) {
-		var shape = new (tu.getRendererModule()[shapeType])(shapeObj);
+	tu.registerSuite(getSuite("new + add", function create(container, shapeType, shapeObj) {
+		var shape = new (tu[shapeType])(shapeObj);
 		container.add(shape);
 		return shape;
 	}));
 
-	tu.registerSuite(getSuite("createXxx funcs", function create(container, shapeType, shapeObj) {
-		return container["create" + shapeType](shapeObj);
+	tu.registerSuite(getSuite("new with parent", function create(container, shapeType, shapeObj) {
+		return new (tu[shapeType])(shapeObj, container);
 	}));
-
-
 });

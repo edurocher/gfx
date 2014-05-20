@@ -12,8 +12,10 @@
 <script type="text/javascript">
 require([
     "dojo/_base/lang", "dcl/dcl", "dojo/_base/event", "dojo/_base/window", "dojo/ready", "dojo/dom-geometry",
-    "dojo/dom-style", "dijit/_Widget", "dijit/_Templated", "gfx/gfx", "dojo/date/locale", "dcl/inherited"
-], function (lang, dcl, event, win, ready, domGeometry, domStyle, Widget, Templated, gfx, dlocale) {
+    "dojo/dom-style", "dijit/_Widget", "dijit/_Templated", "gfx/Surface", "gfx/Group", "gfx/Image",
+    "gfx/Polyline", "gfx/Circle", "gfx/matrix", "dojo/date/locale", "dcl/inherited"
+], function (lang, dcl, event, win, ready, domGeometry, domStyle, Widget, Templated, Surface, Group, Image, Polyline,
+        Circle, matrix, dlocale) {
     var Clock = dcl(Widget, {
         time: "",
 
@@ -66,13 +68,15 @@ require([
 
         _init: function () {
 
-            this.surface = gfx.createSurface(this.domNode, this.mb.w, this.mb.h);
-            this.group = this.surface.createGroup();
-            this.group.createImage({
+            this.surface = new Surface(this.domNode, this.mb.w, this.mb.h);
+            this.group = new Group();
+            this.surface.add(this.group);
+            var img = new Image({
                 width: this.center.x * 2,
                 height: this.center.y * 2,
                 src: this.img
             });
+            this.group.add(img);
 
             // hand shapes
             var _off = 15;
@@ -109,30 +113,37 @@ require([
             ];
 
             // create shapes
-            this.hour_shadow = this.group.createPolyline(hour_hand_points);
+            this.hour_shadow = new Polyline(hour_hand_points);;
             this.hour_shadow.fill = [0, 0, 0, 0.1];
+            this.group.add(this.hour_shadow);
 
-            this.hour_hand = this.group.createPolyline(hour_hand_points);
+            this.hour_hand = new Polyline(hour_hand_points);;
             this.hour_hand.stroke = {color: "black", width: 2};
             this.hour_hand.fill = "#889";
+            this.group.add(this.hour_hand);
 
-            this.minute_shadow = this.group.createPolyline(minute_hand_points);
+            this.minute_shadow = new Polyline(minute_hand_points);;
             this.minute_shadow.fill = [0, 0, 0, 0.1];
+            this.group.add(this.minute_shadow);
 
-            this.minute_hand = this.group.createPolyline(minute_hand_points);
+            this.minute_hand = new Polyline(minute_hand_points);;
             this.minute_hand.stroke = {color: "black", width: 2};
             this.minute_hand.fill = "#ccd";
+            this.group.add(this.minute_hand);
 
-            this.second_shadow = this.group.createPolyline(second_hand_points);
+            this.second_shadow = new Polyline(second_hand_points);;
             this.second_shadow.fill = [0, 0, 0, 0.1];
+            this.group.add(this.second_shadow);
 
-            this.second_hand = this.group.createPolyline(second_hand_points)
+            this.second_hand = new Polyline(second_hand_points);
             this.second_hand.stroke = {color: "#800", width: 2};
             this.second_hand.fill = "#d00";
+            this.group.add(this.second_hand);
 
-            var circle = this.group.createCircle({r: 1});
+            var circle = new Circle({r: 1});
             circle.fill = "black";
             circle.transform = {dx: this.center.x, dy: this.center.y};
+            this.group.add(circle);
 
             // start the clock
             this.resetTime();
@@ -142,7 +153,7 @@ require([
 
         placeHand: function (shape, angle, shift) {
             var move = {dx: this.center.x + (shift ? shift.dx : 0), dy: this.center.y + (shift ? shift.dy : 0)};
-            shape.transform = [move, gfx.matrix.rotateg(angle)];
+            shape.transform = [move, matrix.rotateg(angle)];
             return shape;
         },
 
@@ -241,11 +252,15 @@ require([
 
         resize: function (size) {
             this.surface.setDimensions(size.w, size.h);
-            this.group.transform = gfx.matrix.scale(size.w / this.mb.w, size.h / this.mb.h);
+            this.group.transform = matrix.scale(size.w / this.mb.w, size.h / this.mb.h);
             this._setSize();
         }
 
     });
+
+    var equalSources = function (a, b) {
+        return a && b && a === b;
+    };
 
     var InteractiveClock = dcl(Clock, {
         _init: dcl.superCall(function (sup) {
@@ -276,13 +291,13 @@ require([
                 event.stop(evt);
                 return;
             }
-            if (gfx.equalSources(this.selected_hand, this.second_hand.getEventSource())) {
+            if (equalSources(this.selected_hand, this.second_hand.getEventSource())) {
                 var angle = this.calculateAngle(evt.clientX - this.container_position.x,
                         evt.clientY - this.container_position.y, this.normalizeAngle(this.getSecondAngle()));
                 var diff = Math.round(angle / Math.PI * 180 / 6); // in whole seconds
                 this.current_time.setSeconds(this.current_time.getSeconds() + Math.round(diff));
                 this.reflectTime();
-            } else if (gfx.equalSources(this.selected_hand, this.minute_hand.getEventSource())) {
+            } else if (equalSources(this.selected_hand, this.minute_hand.getEventSource())) {
                 var angle = this.calculateAngle(evt.clientX - this.container_position.x,
                         evt.clientY - this.container_position.y,
                         this.normalizeAngle(this.getMinuteAngle(this.diff_time)));
@@ -290,7 +305,7 @@ require([
                 this.diff_time.setTime(this.diff_time.getTime() + 1000 * diff);
                 this.reflectTime(this.diff_time, true);
 
-            } else if (gfx.equalSources(this.selected_hand, this.hour_hand.getEventSource())) {
+            } else if (equalSources(this.selected_hand, this.hour_hand.getEventSource())) {
                 var angle = this.calculateAngle(evt.clientX - this.container_position.x,
                         evt.clientY - this.container_position.y,
                         this.normalizeAngle(this.getHourAngle(this.diff_time)));
@@ -304,7 +319,7 @@ require([
         },
 
         onMouseUp: function (evt) {
-            if (this.selected_hand && !gfx.equalSources(this.selected_hand, this.second_hand.getEventSource())) {
+            if (this.selected_hand && !equalSources(this.selected_hand, this.second_hand.getEventSource())) {
                 this.current_time.setTime(this.diff_time.getTime());
                 this.reflectTime();
             }

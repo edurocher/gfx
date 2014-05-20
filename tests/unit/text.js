@@ -1,18 +1,18 @@
 ﻿define([
-	"intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx", "gfx/matrix"
-], function (registerSuite, assert, tu, gfx, m) {
+	"intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/matrix", "gfx/_utils"
+], function (registerSuite, assert, tu, m, gu) {
 
 	var surface;
 
 	var textShape = { x: 20, y: 40, text: "Hello !"};
 
 	function placeAnchor(surface, x, y) {
-		surface.createLine({x1: x - 2, y1: y, x2: x + 2, y2: y}).stroke = "blue";
-		surface.createLine({x1: x, y1: y - 2, x2: x, y2: y + 2}).stroke = "blue";
+		new tu.Line({x1: x - 2, y1: y, x2: x + 2, y2: y}, surface).stroke = "blue";
+		new tu.Line({x1: x, y1: y - 2, x2: x, y2: y + 2}, surface).stroke = "blue";
 	}
 
 	function makeText(surface, text, font, fill, stroke) {
-		var t = surface.createText(text);
+		var t = new tu.Text(text, surface);
 		if (font) {
 			t.font = font;
 		}
@@ -37,7 +37,7 @@
 		"text drawing": function () {
 			var ROTATION = 30, t1, t2, t3, t4, t5, t6, t7, t8, t9;
 
-			surface.createLine({x1: 250, y1: 0, x2: 250, y2: 500}).stroke = "green";
+			new tu.Line({x1: 250, y1: 0, x2: 250, y2: 500}, surface).stroke = "green";
 			t1 = makeText(surface, {x: 250, y: 50, text: "Start", align: "start"},
 				{family: "Times", size: "36pt", weight: "bold"}, "black", "red");
 			t1.transform = m.rotategAt(ROTATION, 250, 50);
@@ -77,28 +77,28 @@
 			});
 		},
 		"text.getBoundingBox": function () {
-			var text = surface.createText(textShape);
+			var text = new tu.Text(textShape, surface);
 			text.fill = "black";
 			var bbox = text.getBoundingBox();
 			assert.isTrue(bbox !== null, "Unexpected null bbox.");
 			// it's impossible to test for bbox coordinates as it varies depending on the browser...
 		},
 		"getBoundingBox (empty string)": function () {
-			var text = surface.createText();
+			var text = new tu.Text(surface);
 			text.fill = "black";
 			var bbox = text.getBoundingBox();
 			assert.isTrue(bbox === null, "Unexpected non-null bbox.");
 		},
 		"getBoundingBox (orphan)": function () {
-			var text = surface.createText(textShape);
+			var text = new tu.Text(textShape, surface);
 			text.fill = "black";
 			text.removeShape();
 			var bbox = text.getBoundingBox();
 			assert.isTrue(bbox !== null, "Unexpected bbox.");
 			assert.isTrue(bbox.x === 0 && bbox.y === 0 && bbox.width === 0 && bbox.height === 0,
 				"Unexpected non empty bbox.");
-			var g = surface.createGroup();
-			text = g.createText(textShape);
+			var g = new tu.Group(surface);
+			text = new tu.Text(textShape, g);
 			g.removeShape();
 			bbox = text.getBoundingBox();
 			assert.isTrue(bbox !== null, "Unexpected bbox [2].");
@@ -110,7 +110,7 @@
 	registerSuite({
 		name: "Text measuring",
 		"_getTextBox": function () {
-			var bbox = gfx._getTextBox(textShape.text);
+			var bbox = gu._getTextBox(textShape.text);
 			assert.isTrue(bbox !== null, "Unexpected null bbox.");
 			// it's impossible to test for bbox coordinates as it varies depending on the browser...
 			// but at least verify that it is a {l,t,w,h} object

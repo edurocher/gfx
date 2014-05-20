@@ -1,21 +1,21 @@
 ﻿define([
-	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx", "gfx/matrix"
-], function (require, registerSuite, assert, tu, gfx, matrix) {
+	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/matrix"
+], function (require, registerSuite, assert, tu, matrix) {
 	var surface, line, poly;
 	tu.registerSuite({
 		name: "Polyline transform",
 		setup: function () {
 			surface = tu.createSurface(800, 600);
 
-			line = surface.createLine({x1: 250, y1: 50, x2: 250, y2: 250});
+			line = new tu.Line({x1: 250, y1: 50, x2: 250, y2: 250}, surface);
 			line.stroke = {color: "blue"};
-			poly = surface.createPolyline([
+			poly = new tu.Polyline([
 				{x: 250, y: 250},
 				{x: 300, y: 300},
 				{x: 250, y: 350},
 				{x: 200, y: 300},
 				{x: 250, y: 250}
-			]);
+			], surface);
 			poly.stroke = {color: "blue"};
 		},
 		teardown: function () {

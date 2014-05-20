@@ -1,5 +1,5 @@
 define([
-	"dcl/dcl", "../_base", "./_base", "./Shape", "../shape/_ImageBase"
+	"dcl/dcl", "../_utils", "./_utils", "./Shape", "../shape/_ImageBase"
 ], function (dcl, g, svg, SvgShape, ImageBase) {
 	var Image = dcl([SvgShape, ImageBase], {
 		// summary:
@@ -9,7 +9,7 @@ define([
 			//		sets an image shape object (SVG)
 			// newShape: Object
 			//		an image shape object
-			this._set("shape", g.makeParameters(this.shape, newShape));
+			this._set("shape", g._makeParameters(this.shape, newShape));
 			this.bbox = null;
 			var rawNode = this.rawNode;
 			for (var i in this.shape) {

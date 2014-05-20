@@ -1,21 +1,22 @@
 ﻿define([
-	"intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx", "gfx/matrix", "gfx/svg/filters"
-], function (registerSuite, assert, tu, gfx, matrix, filters) {
+	"intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/matrix", "gfx/svg/filters", "gfx/svg/Group",
+	"gfx/svg/Text", "gfx/svg/Path"
+], function (registerSuite, assert, tu, matrix, filters, Group, Text, Path) {
 	var surface;
 
 	function makeShape(filter, title, transform) {
-		var topg = surface.createGroup();
-		var g = topg.createGroup();
-		g.createPath({path: "M50,90 C0,90 0,30 50,30 L150,30 C200,30 200,90 150,90 z"}).stroke =
+		var topg = new Group(surface);
+		var g = new Group(topg);
+		new Path({path: "M50,90 C0,90 0,30 50,30 L150,30 C200,30 200,90 150,90 z"}, g).stroke =
 		{color: "#0000D9", width: 10};
-		g.createPath({path: "M60,80 C30,80 30,40 60,40 L140,40 C170,40 170,80 140,80 z"}).fill = "#D90000";
-		var text = g.createGroup().createText({x: 52, y: 76, text: "SVG"});
+		new Path({path: "M60,80 C30,80 30,40 60,40 L140,40 C170,40 170,80 140,80 z"}, g).fill = "#D90000";
+		var text = new Text({x: 52, y: 76, text: "SVG"}, new Group(g));
 		text.fill = "white";
 		text.font = {family: "verdana", size: 45};
 		if (filter) {
 			g.filter = filter;
 		}
-		text = topg.createText({x: 100, y: 140, text: title, align: "middle"});
+		text = new Text({x: 100, y: 140, text: title, align: "middle"}, topg);
 		text.fill = "black";
 		text.font = {family: "verdana", size: 20};
 		var tooltip = document.createElementNS("http://www.w3.org/2000/svg", "title");

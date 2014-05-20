@@ -1,6 +1,6 @@
 define([
-	"intern!object", "intern/chai!assert", "dojo/json", "../utils/testUtils", "gfx/gfx", "gfx/utils"
-], function (registerSuite, assert, JSON, tu, gfx, utils) {
+	"intern!object", "intern/chai!assert", "dojo/json", "../utils/testUtils", "gfx/utils", "gfx/all"
+], function (registerSuite, assert, JSON, tu, utils) {
 
 	var surface, img = "http://demos.dojotoolkit.org/demos/resources/images/no_thumb.gif";
 
@@ -22,16 +22,15 @@ define([
 		name: "Utilities",
 		setup: function () {
 			surface = tu.createSurface(300, 300);
-			var r = surface.createRect({
+			var r = new tu.Rect({
 				width: 100,
 				height: 100,
 				x: 100,
 				y: 100
-			});
+			}, surface);
 			r.fill = "blue";
 			r.stroke = "black";
-			surface.createImage({width: 200, height: 200,
-				src: img});
+			surface.add(new tu.Image({width: 200, height: 200, src: img}));
 		},
 		teardown: function () {
 			tu.destroySurface(surface);

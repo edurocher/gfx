@@ -1,6 +1,6 @@
 ﻿define([
-	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx"
-], function (require, registerSuite, assert, tu) {
+	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/svg/Rect"
+], function (require, registerSuite, assert, tu, Rect) {
 
 	var surface;
 
@@ -15,10 +15,10 @@
 		},
 		"percent sizes": function () {
 			var rect;
-			rect = surface.createRect({x: 10, y: 10, width: "100%", height: 100});
+			rect = new Rect({x: 10, y: 10, width: "100%", height: 100}, surface);
 			rect.fill = "red";
 			rect.stroke = "black";
-			rect = surface.createRect({x: 10, y: 130, width: 100, height: "100%"});
+			rect = new Rect({x: 10, y: 130, width: 100, height: "100%"}, surface);
 			rect.fill = "red";
 			rect.stroke = "black";
 

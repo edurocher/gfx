@@ -10,8 +10,9 @@
             data-dojo-config="parseOnLoad: true, async:1"></script>
     <script type="text/javascript">
         require([
-            "dojo/_base/event", "dojo/ready", "dojo/dom", "dojo/on", "dojo/aspect", "gfx/gfx", "gfx/Moveable"
-        ], function (event, ready, dom, on, aspect, gfx, Moveable) {
+            "dojo/_base/event", "dojo/ready", "dojo/dom", "dojo/on", "dojo/aspect", "gfx/Surface", "gfx/Line",
+            "gfx/Circle", "gfx/Moveable"
+        ], function (event, ready, dom, on, aspect, Surface, Line, Circle, Moveable) {
             var container = null, surface = null, surface_size = null;
 
             function makeCircles() {
@@ -19,12 +20,17 @@
                 var x1 = 100, y1 = 100, x2 = 400, y2 = 400, r = 50;
 
                 // our shapes
-                var line = surface.createLine({x1: x1, y1: y1, x2: x2, y2: y2}), circle1 = surface.createCircle({cx: x1, cy: y1, r: r}), circle2 = surface.createCircle({cx: x2, cy: y2, r: r});
+                var line = new Line({x1: x1, y1: y1, x2: x2, y2: y2});
                 line.stroke = "red";
-                circle1.stroke = "red";
-                circle2.stroke = "red";
+                surface.add(line);
+                var circle1 = new Circle({cx: x1, cy: y1, r: r});
                 circle1.fill = "white";
+                circle1.stroke = "red";
+                surface.add(circle1);
+                var circle2 = new Circle({cx: x2, cy: y2, r: r});
+                circle2.stroke = "red";
                 circle2.fill = "white";
+                surface.add(circle2);
 
                 // circle movers
                 var m1 = new Moveable(circle1), m2 = new Moveable(circle2);
@@ -42,7 +48,7 @@
 
             function initGfx() {
                 container = dom.byId("gfx_holder");
-                surface = gfx.createSurface(container, 500, 500);
+                surface = new Surface(container, 500, 500);
                 surface_size = {width: 500, height: 500};
 
                 makeCircles();

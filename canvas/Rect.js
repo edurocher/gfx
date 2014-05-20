@@ -1,5 +1,5 @@
 define([
-	"dcl/dcl", "./_base", "./Shape", "../shape/_RectBase"
+	"dcl/dcl", "./_utils", "./Shape", "../shape/_RectBase"
 ], function (dcl, canvas, CanvasShape, RectBase) {
 
 	function drawDashedArc(/*CanvasRenderingContext2D*/ctx, /*Number[]*/dash, /*int*/cx, /*int*/cy, /*int*/r, /*Number*/

@@ -1,4 +1,4 @@
-define(["./_base"], function (g) {
+define(["./_utils"], function (g) {
 	return {
 		// summary:
 		//		This module is an AMD loader plugin that loads the appropriate GFX shape class

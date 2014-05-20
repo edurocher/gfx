@@ -10,9 +10,10 @@
         data-dojo-config="async:1"></script>
 <script type="text/javascript">
 require([
-    "dojo/ready", "dojo/on", "dojo/dom", "dojo/dom-geometry", "dojo/_base/event", "gfx/gfx", "gfx/matrix",
+    "dojo/ready", "dojo/on", "dojo/dom", "dojo/dom-geometry", "dojo/_base/event", "gfx/Surface", "gfx/Image",
+    "gfx/Polyline", "gfx/Circle", "gfx/matrix",
     "dojo/date/locale"
-], function (ready, on, dom, domGeometry, event, gfx, matrix, dlocale) {
+], function (ready, on, dom, domGeometry, event, Surface, Image, Polyline, Circle, matrix, dlocale) {
     var current_time = new Date();
 
     var hour_hand = null;
@@ -37,7 +38,7 @@ require([
 
     placeHand = function (shape, angle, shift) {
         var move = {dx: center.x + (shift ? shift.dx : 0), dy: center.y + (shift ? shift.dy : 0)};
-        shape.transform = [move, gfx.matrix.rotateg(angle)];
+        shape.transform = [move, matrix.rotateg(angle)];
         return shape;
     };
 
@@ -133,6 +134,10 @@ require([
         return (30 * (time.getHours() + (time.getMinutes() + time.getSeconds() / 60) / 60) - 90) / 180 * Math.PI;
     };
 
+    var equalSources = function (a, b) {
+        return a && b && a === b;
+    };
+
     onMouseDown = function (evt) {
         selected_hand = evt.target;
         diff_time.setTime(current_time.getTime());
@@ -148,20 +153,20 @@ require([
             event.stop(evt);
             return;
         }
-        if (gfx.equalSources(selected_hand, second_hand.getEventSource())) {
+        if (equalSources(selected_hand, second_hand.getEventSource())) {
             var angle = calculateAngle(evt.clientX - container_position.x, evt.clientY - container_position.y,
                     normalizeAngle(getSecondAngle()));
             var diff = Math.round(angle / Math.PI * 180 / 6); // in whole seconds
             current_time.setSeconds(current_time.getSeconds() + Math.round(diff));
             reflectTime();
-        } else if (gfx.equalSources(selected_hand, minute_hand.getEventSource())) {
+        } else if (equalSources(selected_hand, minute_hand.getEventSource())) {
             var angle = calculateAngle(evt.clientX - container_position.x, evt.clientY - container_position.y,
                     normalizeAngle(getMinuteAngle(diff_time)));
             var diff = Math.round(angle / Math.PI * 180 / 6 * 60); // in whole seconds
             diff_time.setTime(diff_time.getTime() + 1000 * diff);
             reflectTime(diff_time, true);
 
-        } else if (gfx.equalSources(selected_hand, hour_hand.getEventSource())) {
+        } else if (equalSources(selected_hand, hour_hand.getEventSource())) {
             var angle = calculateAngle(evt.clientX - container_position.x, evt.clientY - container_position.y,
                     normalizeAngle(getHourAngle(diff_time)));
             var diff = Math.round(angle / Math.PI * 180 / 30 * 60 * 60); // in whole seconds
@@ -174,7 +179,7 @@ require([
     };
 
     onMouseUp = function (evt) {
-        if (selected_hand && !gfx.equalSources(selected_hand, second_hand.getEventSource())) {
+        if (selected_hand && !equalSources(selected_hand, second_hand.getEventSource())) {
             current_time.setTime(diff_time.getTime());
             reflectTime();
         }
@@ -187,8 +192,9 @@ require([
         container = dom.byId("gfx_holder");
         container_position = domGeometry.position(container, true);
         text_time = dom.byId("time");
-        var surface = gfx.createSurface(container, 385, 385);
-        surface.createImage({width: 385, height: 385, src: "images/clock_face_black.jpg"});
+        var surface = new Surface(container, 385, 385);
+        var img = new Image({width: 385, height: 385, src: "images/clock_face_black.jpg"});
+        surface.add(img);
 
         // hand shapes
         var hour_hand_points = [
@@ -215,30 +221,37 @@ require([
         ];
 
         // create shapes
-        hour_shadow = surface.createPolyline(hour_hand_points);
+        hour_shadow = new Polyline(hour_hand_points);
         hour_shadow.fill = [0, 0, 0, 0.1];
+        surface.add(hour_shadow);
 
-        hour_hand = surface.createPolyline(hour_hand_points);
+        hour_hand = new Polyline(hour_hand_points);
         hour_hand.stroke = {color: "black", width: 2};
         hour_hand.fill = "#889";
+        surface.add(hour_hand);
 
-        minute_shadow = surface.createPolyline(minute_hand_points);
+        minute_shadow = new Polyline(minute_hand_points);
         minute_shadow.fill = [0, 0, 0, 0.1];
+        surface.add(minute_shadow);
 
-        minute_hand = surface.createPolyline(minute_hand_points);
+        minute_hand = new Polyline(minute_hand_points);
         minute_hand.stroke = {color: "black", width: 2};
         minute_hand.fill = "#ccd";
+        surface.add(minute_hand);
 
-        second_shadow = surface.createPolyline(second_hand_points);
+        second_shadow = new Polyline(second_hand_points);
         second_shadow.fill = [0, 0, 0, 0.1];
+        surface.add(second_shadow);
 
-        second_hand = surface.createPolyline(second_hand_points)
+        second_hand = new Polyline(second_hand_points)
         second_hand.stroke = {color: "#800", width: 2};
         second_hand.fill = "#d00";
+        surface.add(second_hand);
 
-        var circle = surface.createCircle({r: 1});
+        var circle = new Circle({r: 1});
         circle.fill = "black";
         circle.transform = {dx: 192.5, dy: 192.5};
+        surface.add(circle);
 
         // attach events
         hour_hand.connect("onmousedown", onMouseDown);

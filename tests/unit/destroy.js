@@ -1,5 +1,5 @@
 ﻿define([
-	"intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/registry", "gfx/gfx"
+	"intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/registry"
 ], function (registerSuite, assert, tu, registry) {
 
 	var surface;
@@ -31,7 +31,7 @@
 		},
 		"destroy": function () {
 
-			var path = surface.createPath("");
+			var path = new tu.Path("", surface);
 
 			// form concentric circles
 			var center = {x: 250, y: 250};

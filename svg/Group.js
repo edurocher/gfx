@@ -1,8 +1,8 @@
 define([
-	"dcl/dcl", "./Shape", "../shape/_GroupBase", "./Container", "./Creator"
-], function (dcl, SvgShape, GroupBase, SvgContainer, SvgCreator) {
+	"dcl/dcl", "./Shape", "../shape/_GroupBase", "./Container"
+], function (dcl, SvgShape, GroupBase, SvgContainer) {
 
-	var Group = dcl([SvgShape, GroupBase, SvgContainer, SvgCreator], {
+	var Group = dcl([SvgShape, GroupBase, SvgContainer], {
 		// summary:
 		//		a group shape (SVG), which can be used
 		//		to logically group shapes (e.g, to propagate matricies)

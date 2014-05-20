@@ -21,8 +21,8 @@
     <script type="text/javascript">
         require([
             "dojo/ready", "dojo/dom", "dojo/on", "dojo/topic", "dojo/dom-geometry", "dojo/_base/event",
-            "dojo/request/xhr", "gfx/gfx", "gfx/Moveable", "gfx/utils"
-        ], function (ready, dom, on, topic, domGeometry, event, xhr, gfx, Moveable, gfxUtils) {
+            "dojo/request/xhr", "gfx/all", "gfx/Moveable", "gfx/utils", "gfx/matrix"
+        ], function (ready, dom, on, topic, domGeometry, event, xhr, gfx, Moveable, gfxUtils, matrix) {
             surface = null;
             container_pos = null;
             mover = null;
@@ -30,7 +30,7 @@
             init = function () {
                 // initialize graphics
                 var container = dom.byId("gfx");
-                surface = gfx.createSurface(container, 500, 500);
+                surface = new gfx.Surface(container, 500, 500);
                 container_pos = domGeometry.position(container, true);
                 // wire UI
                 on(dom.byId("load"), "click", onLoad);
@@ -113,9 +113,9 @@
                         continue;
                     }
                     var object = names[Number(opt.value)];
-                    var group = surface.createGroup();
-                    gfx.utils.deserialize(group, object);
-                    new gfx.Moveable(group); // make it moveable as whole
+                    var group = new gfx.Group(surface);
+                    gfxUtils.deserialize(group, object);
+                    new Moveable(group); // make it moveable as whole
                 }
             };
 
@@ -136,12 +136,12 @@
                     break;
                 case "q".charCodeAt(0):
                 case "Q".charCodeAt(0):
-                    mover.shape.applyLeftTransform(gfx.matrix.rotategAt(-15, mover.lastX - container_pos.x,
+                    mover.shape.applyLeftTransform(matrix.rotategAt(-15, mover.lastX - container_pos.x,
                             mover.lastY - container_pos.y));
                     break;
                 case "w".charCodeAt(0):
                 case "W".charCodeAt(0):
-                    mover.shape.applyLeftTransform(gfx.matrix.rotategAt(15, mover.lastX - container_pos.x,
+                    mover.shape.applyLeftTransform(matrix.rotategAt(15, mover.lastX - container_pos.x,
                             mover.lastY - container_pos.y));
                     break;
                 case "d".charCodeAt(0):

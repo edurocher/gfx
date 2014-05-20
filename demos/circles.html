@@ -10,8 +10,8 @@
             data-dojo-config="parseOnLoad: true, async:1"></script>
     <script type="text/javascript">
         require([
-            "dojo/_base/event", "dojo/ready", "dojo/dom", "dojo/on", "gfx/gfx", "gfx/Moveable"
-        ], function (event, ready, dom, on, gfx, Moveable) {
+            "dojo/_base/event", "dojo/ready", "dojo/dom", "dojo/on", "gfx/Surface", "gfx/Circle", "gfx/Moveable"
+        ], function (event, ready, dom, on, Surface, Circle, Moveable) {
             var container = null, surface = null, surface_size = null;
 
             function getRand(from, to) {
@@ -40,16 +40,17 @@
                 var minR = 10, maxR = surface_size.width / 3;
                 for (var j = 0; j < itemCount; ++j) {
                     var r = getRandSkewed(minR, maxR), cx = getRand(r, surface_size.width - r), cy = getRand(r,
-                            surface_size.height - r), shape = surface.createCircle({cx: cx, cy: cy, r: r});
+                            surface_size.height - r), shape = new Circle({cx: cx, cy: cy, r: r});
                     shape.fill = randColor(true);
                     shape.stroke = {color: randColor(true), width: getRand(0, 3)};
                     new Moveable(shape);
+                    surface.add(shape);
                 }
             }
 
             function initGfx() {
                 container = dom.byId("gfx_holder");
-                surface = gfx.createSurface(container, 500, 500);
+                surface = new Surface(container, 500, 500);
                 surface_size = {width: 500, height: 500};
 
                 makeCircleGrid(100);

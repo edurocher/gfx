@@ -1,23 +1,22 @@
 define([
-	"../_base", "dcl/dcl", "./_ShapeBase"
+	"../_utils", "dcl/dcl", "./_ShapeBase"
 ], function (g, dcl, Shape) {
-	var defaultShape = {
-		// summary:
-		//		Defines the default PolyLine prototype.
-
-		// type: String
-		//		Specifies this object is a PolyLine, default value 'polyline'.
-		type: "polyline",
-
-		// points: Array
-		//		An array of point objects [{x:0,y:0},...] defining the default polyline's line segments.
-		//		Value is an empty array [].
-		points: []
-	};
-	var Polyline = dcl(Shape, {
+	return dcl(Shape, {
 		// summary:
 		//		a generic polyline/polygon (do not instantiate it directly)
-		shape: defaultShape,
+		shape: {
+			// summary:
+			//		Defines the default PolyLine prototype.
+
+			// type: String
+			//		Specifies this object is a PolyLine, default value 'polyline'.
+			type: "polyline",
+
+			// points: Array
+			//		An array of point objects [{x:0,y:0},...] defining the default polyline's line segments.
+			//		Value is an empty array [].
+			points: []
+		},
 		_setShapeAttr: dcl.superCall(function (sup) {
 			return function (points, closed) {
 				// summary:
@@ -86,6 +85,4 @@ define([
 			return this.bbox;	// gfx.Rectangle
 		}
 	});
-	Polyline.defaultShape = defaultShape;
-	return Polyline;
 });

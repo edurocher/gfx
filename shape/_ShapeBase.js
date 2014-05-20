@@ -1,6 +1,6 @@
 define([
-	"../_base", "dojo/_base/lang", "dcl/dcl", "dojo/_base/sniff", "dcolor/Color", "../matrix",
-	"./_EventsProcessing", "delite/Stateful"
+	"../_utils", "dojo/_base/lang", "dcl/dcl", "dojo/_base/sniff", "dcolor/Color", "../matrix", "./_EventsProcessing",
+	"delite/Stateful"
 ], function (g, lang, dcl, has, Color, matrixLib, EventsProcessing, Stateful) {
 
 	var registry;
@@ -16,10 +16,147 @@ define([
 		return registry;
 	}
 
-	return dcl([Stateful, EventsProcessing], {
+	// default stylistic attributes
+	var defaultStroke = {
+		// summary:
+		//		A stroke defines stylistic properties that are used when drawing a path.
+		//		This object defines the default Stroke prototype.
+		// type: String
+		//		Specifies this object is a type of Stroke, value 'stroke'.
+		type: "stroke",
+
+		// color: String
+		//		The color of the stroke, default value 'black'.
+		color: "black",
+
+		// style: String
+		//		The style of the stroke, one of 'solid', ... . Default value 'solid'.
+		style: "solid",
+
+		// width: Number
+		//		The width of a stroke, default value 1.
+		width: 1,
+
+		// cap: String
+		//		The endcap style of the path. One of 'butt', 'round', ... . Default value 'butt'.
+		cap: "butt",
+
+		// join: Number
+		//		The join style to use when combining path segments. Default value 4.
+		join: 4
+	};
+
+	var defaultLinearGradient = {
+		// summary:
+		//		An object defining the default stylistic properties used for Linear Gradient fills.
+		//		Linear gradients are drawn along a virtual line, which results in appearance of a rotated pattern
+		//		in a given direction/orientation.
+
+		// type: String
+		//		Specifies this object is a Linear Gradient, value 'linear'
+		type: "linear",
+
+		// x1: Number
+		//		The X coordinate of the start of the virtual line along which the gradient is drawn,
+		//		default value 0.
+		x1: 0,
+
+		// y1: Number
+		//		The Y coordinate of the start of the virtual line along which the gradient is drawn,
+		//		default value 0.
+		y1: 0,
+
+		// x2: Number
+		//		The X coordinate of the end of the virtual line along which the gradient is drawn,
+		//		default value 100.
+		x2: 100,
+
+		// y2: Number
+		//		The Y coordinate of the end of the virtual line along which the gradient is drawn,
+		//		default value 100.
+		y2: 100,
+
+		// colors: Array
+		//		An array of colors at given offsets (from the start of the line).  The start of the line is
+		//		defined at offest 0 with the end of the line at offset 1.
+		//		Default value, [{ offset: 0, color: 'black'},{offset: 1, color: 'white'}], is a gradient from
+		//		black to white.
+		colors: [
+			{ offset: 0, color: "black" },
+			{ offset: 1, color: "white" }
+		]
+	};
+
+	var defaultRadialGradient = {
+		// summary:
+		//		An object specifying the default properties for RadialGradients using in fills patterns.
+
+		// type: String
+		//		Specifies this is a RadialGradient, value 'radial'
+		type: "radial",
+
+		// cx: Number
+		//		The X coordinate of the center of the radial gradient, default value 0.
+		cx: 0,
+
+		// cy: Number
+		//		The Y coordinate of the center of the radial gradient, default value 0.
+		cy: 0,
+
+		// r: Number
+		//		The radius to the end of the radial gradient, default value 100.
+		r: 100,
+
+		// colors: Array
+		//		An array of colors at given offsets (from the center of the radial gradient).
+		//		The center is defined at offest 0 with the outer edge of the gradient at offset 1.
+		//		Default value, [{ offset: 0, color: 'black'},{offset: 1, color: 'white'}], is a gradient from
+		//		black to white.
+		colors: [
+			{ offset: 0, color: "black" },
+			{ offset: 1, color: "white" }
+		]
+	};
+
+	var defaultPattern = {
+		// summary:
+		//		An object specifying the default properties for a Pattern using in fill operations.
+
+		// type: String
+		//		Specifies this object is a Pattern, value 'pattern'.
+		type: "pattern",
+
+		// x: Number
+		//		The X coordinate of the position of the pattern, default value is 0.
+		x: 0,
+
+		// y: Number
+		//		The Y coordinate of the position of the pattern, default value is 0.
+		y: 0,
+
+		// width: Number
+		//		The width of the pattern image, default value is 0.
+		width: 0,
+
+		// height: Number
+		//		The height of the pattern image, default value is 0.
+		height: 0,
+
+		// src: String
+		//		A url specifying the image to use for the pattern.
+		src: ""
+	};
+
+	var ShapeBase = dcl([Stateful, EventsProcessing], {
 		// summary:
 		//		a Shape object, which knows how to apply
 		//		graphical attributes and transformations
+
+		_isShape: true,
+
+		// renderer: String
+		//		The underlying renderer used by this shape ("svg" or "canvas").
+		renderer: null,
 
 		// shape: Object
 		//		an abstract shape object
@@ -58,10 +195,13 @@ define([
 			//		Does nothing to prevent Stateful from mixing in the properties of the 1st constructor argument.
 		},
 
-		constructor: function (rawShape, rawNode) {
+		constructor: function (rawShape, parent) {
 			// summary: Creates a new shape.
 			// rawShape: Object
 			//		The properties of the shape.
+			// parent: Object?
+			//		The parent shape (a gfx/Surface or a gfx/Group). If specified, the new shape will be
+			//		added to this container.
 
 			var shape = this._get("shape");
 			if (shape) {
@@ -94,9 +234,27 @@ define([
 
 			// rawNode: Node
 			//		underlying graphics-renderer-specific implementation object (if applicable)
-			this.rawNode = rawNode || this.createRawNode();
+			this.rawNode = this.createRawNode();
 
-			this.shape = rawShape;
+			if (!parent && rawShape && (rawShape._isShape || rawShape._isSurface)) {
+				parent = rawShape;
+				rawShape = null;
+			}
+
+			if (rawShape && typeof rawShape === "object" && "shape" in rawShape) {
+				this.shape = rawShape.shape;
+				for (var p in rawShape) {
+					if (rawShape.hasOwnProperty(p) && p !== "shape" && p in this) {
+						this[p] = rawShape[p];
+					}
+				}
+			} else {
+				this.shape = rawShape;
+			}
+
+			if (parent) {
+				parent.add(this);
+			}
 		},
 
 		createRawNode: function () {
@@ -231,7 +389,7 @@ define([
 			//		or gfx.defaultImage)
 
 			// COULD BE RE-IMPLEMENTED BY THE RENDERER!
-			this._set("shape", g.makeParameters(this.shape, shape));
+			this._set("shape", g._makeParameters(this.shape, shape));
 			this.bbox = null;
 		},
 		_setFillAttr: function (fill) {
@@ -256,18 +414,18 @@ define([
 				// gradient or pattern
 				switch (fill.type) {
 				case "linear":
-					f = g.makeParameters(g.defaultLinearGradient, fill);
+					f = g._makeParameters(defaultLinearGradient, fill);
 					break;
 				case "radial":
-					f = g.makeParameters(g.defaultRadialGradient, fill);
+					f = g._makeParameters(defaultRadialGradient, fill);
 					break;
 				case "pattern":
-					f = g.makeParameters(g.defaultPattern, fill);
+					f = g._makeParameters(defaultPattern, fill);
 					break;
 				}
 			} else {
 				// color object
-				f = g.normalizeColor(fill);
+				f = g._normalizeColor(fill);
 			}
 			this._set("fill", f);
 		},
@@ -289,8 +447,8 @@ define([
 			if (typeof stroke === "string" || lang.isArray(stroke) || stroke instanceof Color) {
 				stroke = {color: stroke};
 			}
-			var s = g.makeParameters(g.defaultStroke, stroke);
-			s.color = g.normalizeColor(s.color);
+			var s = g._makeParameters(defaultStroke, stroke);
+			s.color = g._normalizeColor(s.color);
 			this._set("stroke", s);
 		},
 		_setTransformAttr: function (matrix) {
@@ -442,4 +600,11 @@ define([
 			return true;
 		}
 	});
+
+	ShapeBase.defaultStroke = defaultStroke;
+	ShapeBase.defaultLinearGradient = defaultLinearGradient;
+	ShapeBase.defaultRadialGradient = defaultRadialGradient;
+	ShapeBase.defaultPattern = defaultPattern;
+
+	return ShapeBase;
 });

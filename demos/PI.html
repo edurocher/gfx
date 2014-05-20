@@ -10,8 +10,8 @@
             data-dojo-config="isDebug: true, async:1"></script>
     <script type="text/javascript">
         require([
-            "dojo/_base/lang", "dojo/ready", "dojo/on", "dojo/dom", "gfx/gfx"
-        ], function (lang, ready, on, dom, gfx) {
+            "dojo/_base/lang", "dojo/ready", "dojo/on", "dojo/dom", "gfx/Surface", "gfx/Circle",
+        ], function (lang, ready, on, dom, Surface, Circle) {
 
             var iterations = 0, inCounter = 0, totalCounter = 0, interval, surface;
 
@@ -27,9 +27,10 @@
                     pointColor = "green";
                 }
 
-                var circle = surface.createCircle({cx: pointX, cy: pointY, r: 3});
+                var circle = new Circle({cx: pointX, cy: pointY, r: 3});
                 circle.fill = pointColor;
                 circle.stroke = {color: pointColor, width: 2};
+                surface.add(circle);
 
                 totalCounter++;
 
@@ -55,7 +56,7 @@
             };
 
             var init = function () {
-                surface = gfx.createSurface("test", 300, 300);
+                surface = new Surface("test", 300, 300);
                 on(dom.byId("startButton"), "click", lang.hitch(this, go));
             };
 

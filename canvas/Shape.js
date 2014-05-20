@@ -1,5 +1,5 @@
 define([
-	"require", "dojo/_base/lang", "dcl/dcl", "../_base", "./_base", "../shape/_ShapeBase", "../decompose"
+	"require", "dojo/_base/lang", "dcl/dcl", "../_utils", "./_utils", "../shape/_ShapeBase", "../decompose"
 ], function (require, lang, dcl, g, canvas, ShapeBase) {
 	var pattrnbuffer = null;
 
@@ -68,6 +68,10 @@ define([
 
 	return dcl([ShapeBase], {
 
+		// renderer: String
+		//		The underlying renderer used by this shape: "canvas".
+		renderer: "canvas",
+
 		_setShapeAttr: dcl.superCall(function (sup) {
 			return function (/*===== shape =====*/) {
 				if (this.parent) {
@@ -110,7 +114,7 @@ define([
 							f = fs.type === "linear" ? ctx.createLinearGradient(fs.x1, fs.y1, fs.x2, fs.y2) :
 								ctx.createRadialGradient(fs.cx, fs.cy, 0, fs.cx, fs.cy, fs.r);
 							fs.colors.forEach(function (step) {
-								f.addColorStop(step.offset, g.normalizeColor(step.color).toRgbaString(true));
+								f.addColorStop(step.offset, g._normalizeColor(step.color).toRgbaString(true));
 							});
 							break;
 						case "pattern":

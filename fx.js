@@ -1,5 +1,5 @@
 define([
-	"dojo/_base/lang", "./_base", "./matrix", "dcolor/Color", "dcolor/utils", "dojo/_base/fx", "dojo/_base/connect",
+	"dojo/_base/lang", "./_utils", "./matrix", "dcolor/Color", "dcolor/utils", "dojo/_base/fx", "dojo/_base/connect",
 	"dojo/sniff"
 ], function (lang, g, m, Color, colorUtils, fx, Hub, has) {
 		var fxg = g.fx = {};
@@ -109,12 +109,12 @@ define([
 			}
 			var value, start, end;
 			if (prop.start) {
-				start = g.normalizeColor(prop.start);
+				start = g._normalizeColor(prop.start);
 			} else {
 				start = value = obj ? (name ? obj[name] : obj) : def;
 			}
 			if (prop.end) {
-				end = g.normalizeColor(prop.end);
+				end = g._normalizeColor(prop.end);
 			} else {
 				if (!value) {
 					value = obj ? (name ? obj[name] : obj) : def;

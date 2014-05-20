@@ -1,23 +1,22 @@
 define([
-	"../_base", "dcl/dcl", "dojo/_base/lang", "./_ShapeBase", "../matrix"
+	"../_utils", "dcl/dcl", "dojo/_base/lang", "./_ShapeBase", "../matrix"
 ], function (g, dcl, lang, Shape, matrix) {
-	var defaultShape = {
-		// summary:
-		//		Defines the default Path prototype object.
-
-		// type: String
-		//		Specifies this object is a Path, default value 'path'.
-		type: "path",
-
-		// path: String
-		//		The path commands. See W32C SVG 1.0 specification.
-		//		Defaults to empty string value.
-		path: ""
-	};
-	var Path = dcl(Shape, {
+	return dcl(Shape, {
 		// summary:
 		//		a generalized path shape
-		shape: defaultShape,
+		shape: {
+			// summary:
+			//		Defines the default Path prototype object.
+
+			// type: String
+			//		Specifies this object is a Path, default value 'path'.
+			type: "path",
+
+			// path: String
+			//		The path commands. See W32C SVG 1.0 specification.
+			//		Defaults to empty string value.
+			path: ""
+		},
 		constructor: function () {
 			// summary:
 			//		a path constructor
@@ -225,7 +224,7 @@ define([
 			// add an SVG path segment
 			var path = [segment.action];
 			for (i = 0; i < l; ++i) {
-				path.push(g.formatNumber(n[i], true));
+				path.push(this._formatNumber(n[i], true));
 			}
 			if (typeof this.shape.path === "string") {
 				this.shape.path += path.join("");
@@ -234,6 +233,35 @@ define([
 					this.shape.path.push(path[i]);
 				}
 			}
+		},
+
+		// decimals: Number
+		//		Number of decimals in coordinates when generating the path string. Default is 4.
+		decimals: 4,
+
+		_formatNumber: function (x, addSpace) {
+			// summary:
+			//		converts a number to a string using a fixed notation
+			// x: Number
+			//		number to be converted
+			// addSpace: Boolean
+			//		whether to add a space before a positive number
+			// returns: String
+			//      the formatted value
+			var val = x.toString();
+			var d = this.decimals;
+			if (val.indexOf("e") >= 0) {
+				val = x.toFixed(dcl);
+			} else {
+				var point = val.indexOf(".");
+				if (point >= 0 && val.length - point > d + 1) {
+					val = x.toFixed(d);
+				}
+			}
+			if (x < 0) {
+				return val; // String
+			}
+			return addSpace ? " " + val : val; // String
 		},
 
 		// a dictionary, which maps segment type codes to a number of their arguments
@@ -393,7 +421,7 @@ define([
 			//		forms a path using an SVG path string
 			// path: String
 			//		an SVG path string
-			var p = lang.isArray(path) ? path : path.match(g.pathSvgRegExp);
+			var p = lang.isArray(path) ? path : path.match(/([A-DF-Za-df-z])|([-+]?\d*[.]?\d+(?:[eE][-+]?\d+)?)/g);
 			this.segments = [];
 			this.absolute = true;
 			this.bbox = {};
@@ -441,6 +469,4 @@ define([
 		// useful constant for descendants
 		_2PI: Math.PI * 2
 	});
-	Path.defaultShape = defaultShape;
-	return Path;
 });

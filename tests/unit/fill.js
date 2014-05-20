@@ -1,5 +1,5 @@
 ﻿define([
-	"intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx"
+	"intern!object", "intern/chai!assert", "../utils/testUtils"
 ], function (registerSuite, assert, tu) {
 	var surface;
 	tu.registerSuite({
@@ -12,7 +12,7 @@
 		},
 		"fill": function () {
 
-			var path = surface.createPath("");
+			var path = new tu.Path("", surface);
 			// form concentric circles
 			var center = {x: 250, y: 250};
 			for (var r = 200; r > 0; r -= 30) {

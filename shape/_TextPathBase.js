@@ -1,6 +1,7 @@
 define([
-	"../_base", "dcl/dcl", "dojo/_base/lang", "./_PathBase", "dojo/has", "dojo/has!dojo-bidi?./bidi/_TextPath"
-], function (g, dcl, lang, Path, has, BidiTextPath) {
+	"../_utils", "dcl/dcl", "dojo/_base/lang", "./_PathBase", "./_FontBase", "dojo/has",
+	"dojo/has!dojo-bidi?./bidi/_TextPath"
+], function (g, dcl, lang, Path, Font, has, BidiTextPath) {
 	var defaultShape = {
 		// summary:
 		//		Defines the default TextPath prototype.
@@ -34,14 +35,10 @@ define([
 		//		Whether kerning is used on the text, boolean default value true.
 		kerning: true
 	};
-	var TextPath = dcl(Path, {
+	var TextPath = dcl([Path, Font], {
 		// summary:
 		//		a generalized TextPath shape
 		shape: defaultShape,
-
-		// font: Object
-		//		A font object (see gfx.defaultFont) or a font string
-		font: null,
 
 		// text: Object
 		//		The text to be drawn along the path
@@ -50,30 +47,42 @@ define([
 		constructor: function () {
 			// summary:
 			//		a TextPath shape constructor
-			this._set("text", lang.clone(TextPath.defaultShape));
-			this._set("font", lang.clone(g.defaultFont));
+			if (!this._get("font")) {
+				this._set("font", lang.clone(Font.defaultFont));
+			}
 		},
+
+		_setShapeAttr: dcl.superCall(function (sup) {
+			return function () {
+				// summary:
+				//		forms a path using a shape (SVG)
+				// newShape: Object
+				//		an SVG path string or a path object.
+				sup.apply(this, arguments);
+				this._setTextPath();
+				if (this.shape.text) {
+					this.text = this.shape.text;
+				}
+				return this;	// self
+			};
+		}),
+
 		_setTextAttr: function (newText) {
 			// summary:
 			//		sets a text to be drawn along the path
-			this._set("text",
-				g.makeParameters(this._get("text"), typeof newText === "string" ? {text: newText} : newText));
+			this._set("text", g._makeParameters(this._get("text") || lang.clone(defaultShape),
+				typeof newText === "string" ? {text: newText} : newText));
 			this._setText();
-			return this;	// self
-		},
-		_setFontAttr: function (newFont) {
-			// summary:
-			//		sets a font for text
-			this._set("font",
-				typeof newFont === "string" ? g.splitFontString(newFont) : g.makeParameters(g.defaultFont, newFont));
-			this._setFont();
 			return this;	// self
 		}
 	});
 	if (has("dojo-bidi")) {
 		TextPath = dcl([TextPath, BidiTextPath], {});
-		defaultShape.textDir = "";
+		dcl.mix(defaultShape, {
+			// textDir: String
+			//		The text direction.
+			textDir: ""
+		});
 	}
-	TextPath.defaultShape = defaultShape;
 	return TextPath;
 });

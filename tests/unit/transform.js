@@ -1,6 +1,6 @@
 ﻿define([
-	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx", "gfx/matrix"
-], function (require, registerSuite, assert, tu, gfx, matrix) {
+	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/matrix"
+], function (require, registerSuite, assert, tu, matrix) {
 
 	var surface, p1, p2, p3;
 
@@ -9,20 +9,20 @@
 		setup: function () {
 			surface = tu.createSurface(500, 500);
 
-			var g1 = surface.createGroup();
+			var g1 = new tu.Group(surface);
 			// make a checkerboard
 			for (var i = 0; i < 500; i += 100) {
 				for (var j = 0; j < 500; j += 100) {
 					if (i % 200 === j % 200) {
-						surface.createRect({ x: i, y: j }).fill = [255, 0, 0, 0.1];
+						new tu.Rect({ x: i, y: j }, surface).fill = [255, 0, 0, 0.1];
 					}
 				}
 			}
-			var r1 = g1.createRect({ x: 200, y: 200 });
+			var r1 = new tu.Rect({ x: 200, y: 200 }, g1);
 			r1.fill = "green";
 			r1.stroke = {};
 
-			var r2 = surface.createRect();
+			var r2 = new tu.Rect(surface);
 			r2.stroke = {};
 			r2.fill = { type: "linear", to: { x: 50, y: 100 },
 				colors: [
@@ -32,20 +32,20 @@
 				] };
 			r2.transform = {dx: 100, dy: 100};
 
-			var r3 = surface.createRect();
+			var r3 = new tu.Rect(surface);
 			r3.stroke = {};
 			r3.fill = { type: "linear" };
-			var r4 = g1.createRect({});
+			var r4 = new tu.Rect({}, g1);
 			r4.fill = "blue";
 			r4.transform = [matrix.rotategAt(-30, 350, 250), { dx: 300, dy: 200 }];
-			p1 = g1.createPath().moveTo(300, 100).lineTo(400, 200).lineTo(400, 300).lineTo(300, 400).curveTo(400,
+			p1 = new tu.Path(g1).moveTo(300, 100).lineTo(400, 200).lineTo(400, 300).lineTo(300, 400).curveTo(400,
 				300, 400, 200, 300, 100);
 			p1.stroke = {};
 			p1.transform = {};
-			p2 = g1.createPath(p1.shape);
+			p2 = new tu.Path(p1.shape, g1);
 			p2.stroke = { color: "red", width: 2 };
 			p2.transform = { dx: 100 };
-			p3 = g1.createPath().moveTo(300, 100).setAbsoluteMode(false).lineTo(100, 100).lineTo(0,
+			p3 = new tu.Path(g1).moveTo(300, 100).setAbsoluteMode(false).lineTo(100, 100).lineTo(0,
 				100).lineTo(-100, 100).curveTo(100, -100, 100, -200, 0, -300);
 			p3.stroke = { color: "blue", width: 2 };
 			p3.transform = matrix.rotategAt(180, 250, 250);
@@ -70,13 +70,13 @@
 
 			var a = p1.getTransformedBoundingBox();
 			a.push(a[0]);
-			surface.createPolyline(a).stroke = "green";
+			new tu.Polyline(a, surface).stroke = "green";
 			a = p2.getTransformedBoundingBox();
 			a.push(a[0]);
-			surface.createPolyline(a).stroke = "green";
+			new tu.Polyline(a, surface).stroke = "green";
 			a = p3.getTransformedBoundingBox();
 			a.push(a[0]);
-			surface.createPolyline(a).stroke = "green";
+			new tu.Polyline(a, surface).stroke = "green";
 
 			tu.compare(surface, {
 				/* jshint maxlen:100000, quotmark:single */

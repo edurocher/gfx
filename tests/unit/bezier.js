@@ -1,6 +1,6 @@
 ﻿define([
-	"intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx", "gfx/matrix"
-], function (registerSuite, assert, tu, gfx, matrix) {
+	"intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/matrix"
+], function (registerSuite, assert, tu, matrix) {
 	var surface;
 	tu.registerSuite({
 		name: "Bezier curves",
@@ -12,7 +12,7 @@
 		},
 		"Bezier": function () {
 
-			var g = surface.createGroup();
+			var g = new tu.Group(surface);
 
 			// create a reference ellipse
 			var rx = 200;
@@ -20,7 +20,7 @@
 			var startAngle = -30;
 			var arcAngle = -90;
 			var axisAngle = -30;
-			var e = g.createEllipse({rx: rx, ry: ry});
+			var e = new tu.Ellipse({rx: rx, ry: ry}, g);
 			e.stroke = {};
 
 			// calculate a bezier
@@ -43,7 +43,7 @@
 			p3 = matrix.multiplyPoint(s, p3);
 			p4 = matrix.multiplyPoint(s, p4);
 			// draw control trapezoid
-			var t = g.createPath();
+			var t = new tu.Path(g);
 			t.stroke = {color: "blue"};
 			t.moveTo(p1.x, p1.y);
 			t.lineTo(p2.x, p2.y);
@@ -55,7 +55,7 @@
 			t.moveTo((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
 			t.lineTo((p3.x + p4.x) / 2, (p3.y + p4.y) / 2);
 			// draw a bezier
-			var b = g.createPath();
+			var b = new tu.Path(g);
 			b.stroke = {color: "red"};
 			b.moveTo(p1.x, p1.y);
 			b.curveTo(p2.x, p2.y, p3.x, p3.y, p4.x, p4.y);

@@ -1,5 +1,5 @@
 ﻿define([
-	"intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx",
+	"intern!object", "intern/chai!assert", "../utils/testUtils",
 ], function (registerSuite, assert, tu) {
 	var surface, g1, g2, r1, shape;
 	tu.registerSuite({
@@ -11,14 +11,14 @@
 			for (var i = 0; i < 500; i += 100) {
 				for (var j = 0; j < 500; j += 100) {
 					if (i % 200 === j % 200) {
-						surface.createRect({ x: i, y: j }).fill = [255, 0, 0, 0.1];
+						new tu.Rect({ x: i, y: j }, surface).fill = [255, 0, 0, 0.1];
 					}
 				}
 			}
 			// create groups and shapes
-			g1 = surface.createGroup();
-			g2 = surface.createGroup();
-			r1 = new (tu.getRendererModule().Rect)({x: 200, y: 200});
+			g1 = new tu.Group(surface);
+			g2 = new tu.Group(surface);
+			r1 = new tu.Rect({x: 200, y: 200});
 			r1.fill = "green";
 			r1.stroke = {};
 			g1.transform = {dy: -100};
@@ -77,7 +77,7 @@
 		},
 		"add/clear/add": function () {
 
-			shape = surface.createCircle({cx: 150, cy: 150, r: 50});
+			shape = new tu.Circle({cx: 150, cy: 150, r: 50}, surface);
 			shape.fill = "yellow";
 			shape.stroke = {color: "red", width: 3};
 

@@ -1,13 +1,17 @@
 define([
-	"require", "dcl/dcl", "dojo/dom", "../_base", "./_base", "../shape/_SurfaceBase", "./Container", "./Creator",
+	"require", "dcl/dcl", "dojo/dom", "../_utils", "./_utils", "../shape/_SurfaceBase", "./Container",
 	"dojo/has", "dojo/has!dojo-bidi?./bidi/Surface"
-], function (require, dcl, dom, g, svg, SurfaceBase, Container, Creator, has, BidiSurface) {
+], function (require, dcl, dom, g, svg, SurfaceBase, Container, has, BidiSurface) {
 
 	var cc = {};
 
-	var Surface = dcl([SurfaceBase, Container, Creator], {
+	var Surface = dcl([SurfaceBase, Container], {
 		// summary:
 		//		a surface object to be used for drawings (SVG)
+
+		// renderer: String
+		//		The underlying renderer used by this surface: "svg".
+		renderer: "svg",
 
 		constructor: function (parentNode, width, height) {
 			// summary:
@@ -77,8 +81,8 @@ define([
 			// summary:
 			//		returns an object with properties "width" and "height"
 			return this.rawNode ? {
-				width: g.normalizedLength(this.rawNode.getAttribute("width")),
-				height: g.normalizedLength(this.rawNode.getAttribute("height"))
+				width: g._normalizedLength(this.rawNode.getAttribute("width")),
+				height: g._normalizedLength(this.rawNode.getAttribute("height"))
 			} : null; // Object
 		},
 

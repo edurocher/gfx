@@ -1,5 +1,5 @@
 define([
-	"dcl/dcl", "../_base", "./Shape", "../shape/_PolylineBase"
+	"dcl/dcl", "../_utils", "./Shape", "../shape/_PolylineBase"
 ], function (dcl, g, SvgShape, PolylineBase) {
 	var Polyline = dcl([SvgShape, PolylineBase], {
 		// summary:
@@ -10,12 +10,12 @@ define([
 			// points: Object|Array
 			//		a polyline/polygon shape object, or an array of points
 			if (points && points instanceof Array) {
-				this._set("shape", g.makeParameters(this.shape, { points: points }));
+				this._set("shape", g._makeParameters(this.shape, { points: points }));
 				if (closed && this.shape.points.length) {
 					this.shape.points.push(this.shape.points[0]);
 				}
 			} else {
-				this._set("shape", g.makeParameters(this.shape, points));
+				this._set("shape", g._makeParameters(this.shape, points));
 			}
 			this.bbox = null;
 			this._normalizePoints();

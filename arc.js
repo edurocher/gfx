@@ -1,4 +1,4 @@
-define(["./_base", "dojo/_base/lang", "./matrix"], function (g, lang, m) {
+define(["./_utils", "dojo/_base/lang", "./matrix"], function (g, lang, m) {
 	var twoPI = 2 * Math.PI, pi4 = Math.PI / 4, pi8 = Math.PI / 8, pi48 = pi4 + pi8, curvePI4 = unitArcAsBezier(pi8);
 
 	function unitArcAsBezier(alpha) {

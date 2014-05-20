@@ -1,6 +1,6 @@
 ﻿define([
-	"intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx"
-], function (registerSuite, assert, tu, gfx) {
+	"intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/_utils"
+], function (registerSuite, assert, tu, gu) {
 	var surface;
 	tu.registerSuite({
 		name: "Line styles",
@@ -16,13 +16,13 @@
 				"DashDot", "LongDashDot", "LongDashDotDot"
 			];
 			var font = "normal normal normal 10pt Arial";	// CSS font style
-			var yOffset = gfx.normalizedLength("4pt");
+			var yOffset = gu._normalizedLength("4pt");
 			for (var i = 0; i < styles.length; ++i) {
 				var y = 20 + i * 20;
-				var text = surface.createText({x: 140, y: y + yOffset, text: styles[i], align: "end"});
+				var text = new tu.Text({x: 140, y: y + yOffset, text: styles[i], align: "end"}, surface);
 				text.font = font;
 				text.fill = "black";
-				var line = surface.createLine({x1: 150, y1: y, x2: 490, y2: y});
+				var line = new tu.Line({x1: 150, y1: y, x2: 490, y2: y}, surface);
 				line.stroke = {style: styles[i], width: 3, cap: "round"};
 			}
 

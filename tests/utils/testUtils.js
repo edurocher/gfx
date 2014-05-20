@@ -1,11 +1,174 @@
 define([
-	"intern", "intern!object", "intern/chai!assert", "gfx/svg", "gfx/canvas", "./canvasRecorder", "gfx/canvas/_base"
-], function (intern, registerSuite, assert, svg, canvas, canvasRecorder, canvasBase) {
+	"intern", "intern!object", "intern/chai!assert", "gfx/svg/Surface", "gfx/canvas/Surface", "./canvasRecorder",
+	"../../canvas/_utils", "gfx/svg/all", "gfx/canvas/all"
+], function (intern, registerSuite, assert, SvgSurface, CanvasSurface, canvasRecorder, canvasBase) {
 
 	// summary:
 	//		GFX test utilities to facilitate testing GFX with Intern.
 
 	var debug = false; // print SVG tree while comparing
+
+	var renderers = {
+		"svg": {
+			label: "SVG",
+			prefix: "gfx/svg/",
+			Surface: SvgSurface,
+			dump: dumpSVG,
+			compare: compareSVG
+		},
+		"canvas": {
+			label: "Canvas",
+			prefix: "gfx/canvas/",
+			Surface: CanvasSurface,
+			dump: dumpCanvas,
+			compare: compareCanvas
+		}
+	};
+	var renderer;
+
+	var surfaceRow, surfaceCols = {};
+
+	var visual = intern.config.gfxVisualTest;
+
+	var surfacesOnScreen = [];
+
+	var createSurface = function (width, height, r, key, title) {
+		var node = document.createElement("div");
+		r = renderer || r || "svg";
+		if (visual) {
+			var tr, td;
+			if (!surfaceRow) {
+				var table = document.createElement("table");
+				document.body.appendChild(table);
+				surfaceRow = document.createElement("tr");
+				table.appendChild(surfaceRow);
+			}
+			var columnName = r + (key ? (" - " + key) : "");
+			var c = surfaceCols[columnName];
+			if (!c) {
+				td = document.createElement("td");
+				surfaceRow.appendChild(td);
+				c = document.createElement("table");
+				td.appendChild(c);
+				surfaceCols[columnName] = c;
+				tr = document.createElement("tr");
+				c.appendChild(tr);
+				var th = document.createElement("th");
+				th.innerHTML = columnName;
+				th.style.fontFamily = "arial";
+				th.style.height = "30px";
+				tr.appendChild(th);
+			}
+			_createSurfaceCell(c, node, width, height);
+			if (title) {
+				tr = document.createElement("tr");
+				c.appendChild(tr);
+				td = document.createElement("td");
+				td.innerHTML = title;
+				td.style.fontFamily = "arial";
+				td.style.textAlign = "center";
+				td.style.height = "30px";
+				td.style.verticalAlign = "top";
+				tr.appendChild(td);
+			}
+		} else {
+			document.body.appendChild(node);
+		}
+		var surface = new renderers[r].Surface(node, width, height);
+		if (visual) {
+			surfacesOnScreen.push(surface);
+		}
+		return surface;
+	};
+
+	var _createSurfaceCell = function (c, node, width, height) {
+		var tr = document.createElement("tr");
+		c.appendChild(tr);
+		var td = document.createElement("td");
+		td.style.width = width + "px";
+		td.style.height = height + "px";
+		tr.appendChild(td);
+		node.style.border = "#c0c0c0 1px solid";
+		td.appendChild(node);
+	};
+
+	var destroySurface = function (surface) {
+		if (!visual || surface.children.length === 0) {
+			var p = surface._parent;
+			var pp = p.parentNode.parentNode;
+			surface.destroy();
+			p.parentNode.removeChild(p);
+			if (visual && pp.parentNode.tagName === "TR") {
+				pp.parentNode.removeChild(pp);
+			}
+			surfacesOnScreen.splice(surfacesOnScreen.indexOf(surface), 1);
+		}
+	};
+
+	var clear = function (surface) {
+		if (visual) {
+			var c = surface._parent.parentNode.parentNode.parentNode;
+			var r = renderer || "svg";
+			var node = document.createElement("div");
+			var dim = surface.getDimensions();
+			_createSurfaceCell(c, node, dim.width, dim.height);
+			surface = new renderers[r].Surface(node, dim.width, dim.height);
+			surfacesOnScreen.push(surface);
+		} else {
+			surface.clear();
+		}
+		return surface;
+	};
+
+	var titleHeading, emptyMessage;
+
+	function addTitle(title) {
+		if (!visual) {
+			return;
+		}
+		if (!titleHeading) {
+			titleHeading = document.createElement("div");
+			var h = document.createElement("h2");
+			titleHeading.appendChild(h);
+			h.innerHTML = title;
+			titleHeading.style.fontFamily = "arial";
+			document.body.appendChild(titleHeading);
+		} else {
+			titleHeading.firstChild.innerHTML += " / " + title;
+		}
+	}
+
+	function checkEmpty() {
+		if (!visual) {
+			return;
+		}
+		var empty = true;
+		surfacesOnScreen.forEach(function (s) {
+			if (s.children.length) {
+				s.children.forEach(function (child) {
+					if (!("children" in child) || child.children.length) {
+						empty = false;
+					}
+				});
+			}
+		});
+		if (empty) {
+			if (!emptyMessage) {
+				var p = document.createElement("p");
+				emptyMessage = p;
+				p.innerHTML =
+					"This test does not display anything so interesting, check browser console (F12) for messages.";
+				p.style.fontFamily = "arial";
+				p.style.backgroundColor = "#e0e0e0";
+				p.style.padding = "10px";
+				p.style.borderRadius = "5px";
+				titleHeading.appendChild(p);
+			}
+		} else if (emptyMessage) {
+			titleHeading.removeChild(emptyMessage);
+			emptyMessage = null;
+		}
+	}
 
 	function normalizeImage(src) {
 		return src.replace(/^.*gfx/g, "gfx");
@@ -105,156 +268,6 @@ define([
 		}
 	}
 
-	var renderers = {
-		"svg": { label: "SVG", module: svg, dump: dumpSVG, compare: compareSVG },
-		"canvas": { label: "Canvas", module: canvas, dump: dumpCanvas, compare: compareCanvas }
-	};
-	var renderer;
-
-	var surfaceRow, surfaceCols = {};
-
-	var visual = intern.config.gfxVisualTest;
-
-	var surfacesOnScreen = [];
-
-	var createSurface = function (width, height, r, key, title) {
-		var node = document.createElement("div");
-		r = renderer || r || "svg";
-		if (visual) {
-			var tr, td;
-			if (!surfaceRow) {
-				var table = document.createElement("table");
-				document.body.appendChild(table);
-				surfaceRow = document.createElement("tr");
-				table.appendChild(surfaceRow);
-			}
-			var columnName = r + (key ? (" - " + key) : "");
-			var c = surfaceCols[columnName];
-			if (!c) {
-				td = document.createElement("td");
-				surfaceRow.appendChild(td);
-				c = document.createElement("table");
-				td.appendChild(c);
-				surfaceCols[columnName] = c;
-				tr = document.createElement("tr");
-				c.appendChild(tr);
-				var th = document.createElement("th");
-				th.innerHTML = columnName;
-				th.style.fontFamily = "arial";
-				th.style.height = "30px";
-				tr.appendChild(th);
-			}
-			_createSurfaceCell(c, node, width, height);
-			if (title) {
-				tr = document.createElement("tr");
-				c.appendChild(tr);
-				td = document.createElement("td");
-				td.innerHTML = title;
-				td.style.fontFamily = "arial";
-				td.style.textAlign = "center";
-				td.style.height = "30px";
-				td.style.verticalAlign = "top";
-				tr.appendChild(td);
-			}
-		} else {
-			document.body.appendChild(node);
-		}
-		var surface = new renderers[r].module.Surface(node, width, height);
-		if (visual) {
-			surfacesOnScreen.push(surface);
-		}
-		return surface;
-	};
-
-	var _createSurfaceCell = function (c, node, width, height) {
-		var tr = document.createElement("tr");
-		c.appendChild(tr);
-		var td = document.createElement("td");
-		td.style.width = width + "px";
-		td.style.height = height + "px";
-		tr.appendChild(td);
-		node.style.border = "#c0c0c0 1px solid";
-		td.appendChild(node);
-	};
-
-	var destroySurface = function (surface) {
-		if (!visual || surface.children.length === 0) {
-			var p = surface._parent;
-			var pp = p.parentNode.parentNode;
-			surface.destroy();
-			p.parentNode.removeChild(p);
-			if (visual && pp.parentNode.tagName === "TR") {
-				pp.parentNode.removeChild(pp);
-			}
-			surfacesOnScreen.splice(surfacesOnScreen.indexOf(surface), 1);
-		}
-	};
-
-	var clear = function (surface) {
-		if (visual) {
-			var c = surface._parent.parentNode.parentNode.parentNode;
-			var r = renderer || "svg";
-			var node = document.createElement("div");
-			var dim = surface.getDimensions();
-			_createSurfaceCell(c, node, dim.width, dim.height);
-			surface = new renderers[r].module.Surface(node, dim.width, dim.height);
-			surfacesOnScreen.push(surface);
-		} else {
-			surface.clear();
-		}
-		return surface;
-	};
-
-	var titleHeading, emptyMessage;
-
-	function addTitle(title) {
-		if (!visual) {
-			return;
-		}
-		if (!titleHeading) {
-			titleHeading = document.createElement("div");
-			var h = document.createElement("h2");
-			titleHeading.appendChild(h);
-			h.innerHTML = title;
-			titleHeading.style.fontFamily = "arial";
-			document.body.appendChild(titleHeading);
-		} else {
-			titleHeading.firstChild.innerHTML += " / " + title;
-		}
-	}
-
-	function checkEmpty() {
-		if (!visual) {
-			return;
-		}
-		var empty = true;
-		surfacesOnScreen.forEach(function (s) {
-			if (s.children.length) {
-				s.children.forEach(function (child) {
-					if (!("children" in child) || child.children.length) {
-						empty = false;
-					}
-				});
-			}
-		});
-		if (empty) {
-			if (!emptyMessage) {
-				var p = document.createElement("p");
-				emptyMessage = p;
-				p.innerHTML =
-					"This test does not display anything so interesting, check browser console (F12) for messages.";
-				p.style.fontFamily = "arial";
-				p.style.backgroundColor = "#e0e0e0";
-				p.style.padding = "10px";
-				p.style.borderRadius = "5px";
-				titleHeading.appendChild(p);
-			}
-		} else if (emptyMessage) {
-			titleHeading.removeChild(emptyMessage);
-			emptyMessage = null;
-		}
-	}
-
 	var tu = {
 		registerSuite: function (suite) {
 			addTitle(suite.name);
@@ -351,10 +364,21 @@ define([
 		addTitle: addTitle,
 		checkEmpty: checkEmpty,
 
-		getRendererModule: function () {
-			return renderers[tu.renderer].module;
+		getRendererClass: function (name) {
+			return require(renderers[tu.renderer].prefix + name);
 		}
 	};
+
+	[
+		"Circle", "Ellipse", "Group", "Image", "Line", "Path", "Polyline", "Rect", "Text", "TextPath"
+	].forEach(function (c) {
+			Object.defineProperty(tu, c, {
+				enumerable: true,
+				get: function () {
+					return tu.getRendererClass(c);
+				}
+			});
+		});
 
 	return tu;
 });

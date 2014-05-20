@@ -1,7 +1,9 @@
 define([
-	"dcl/dcl"
-], function (dcl) {
-	return dcl(null, {
+	"dcl/dcl", "../shape/_FontBase"
+], function (dcl, FontBase) {
+	return dcl(FontBase, {
+		// summary: SVG implementation of Font mixin
+
 		_setFont: function () {
 			// summary:
 			//		sets a font object (SVG)

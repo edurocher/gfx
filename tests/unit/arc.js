@@ -1,6 +1,6 @@
 ﻿define([
-	"intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx", "gfx/matrix"
-], function (registerSuite, assert, tu, gfx, m) {
+	"intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/matrix"
+], function (registerSuite, assert, tu, m) {
 	var surface;
 	tu.registerSuite({
 		name: "Arc test",
@@ -11,20 +11,20 @@
 			tu.destroySurface(surface);
 		},
 		"arc shape": function () {
-			var g1 = surface.createGroup();
-			var g2 = g1.createGroup();
+			var g1 = new tu.Group(surface);
+			var g2 = new tu.Group(g1);
 
 			var rx = 100, ry = 60, xRotg = -30;
 			var startPoint = m.multiplyPoint(m.rotateg(xRotg), {x: -rx, y: 0  });
 			var endPoint = m.multiplyPoint(m.rotateg(xRotg), {x: 0, y: -ry});
 
-			var re1 = g1.createPath().moveTo(startPoint).arcTo(rx, ry, xRotg, true, false, endPoint);
+			var re1 = new tu.Path(g1).moveTo(startPoint).arcTo(rx, ry, xRotg, true, false, endPoint);
 			re1.stroke = {color: "red", width: 3};
-			var ge1 = g1.createPath().moveTo(re1.getLastPosition()).arcTo(rx, ry, xRotg, false, false, startPoint);
+			var ge1 = new tu.Path(g1).moveTo(re1.getLastPosition()).arcTo(rx, ry, xRotg, false, false, startPoint);
 			ge1.stroke = {color: "black"};
-			var re2 = g2.createPath().moveTo(startPoint).arcTo(rx, ry, xRotg, false, true, endPoint);
+			var re2 = new tu.Path(g2).moveTo(startPoint).arcTo(rx, ry, xRotg, false, true, endPoint);
 			re2.stroke = {color: "green", width: 3};
-			var ge2 = g2.createPath().moveTo(re2.getLastPosition()).arcTo(rx, ry, xRotg, true, true, startPoint);
+			var ge2 = new tu.Path(g2).moveTo(re2.getLastPosition()).arcTo(rx, ry, xRotg, true, true, startPoint);
 			ge2.stroke = {color: "black"};
 
 			g1.transform = {dx: 200, dy: 200};

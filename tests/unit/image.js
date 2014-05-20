@@ -1,6 +1,6 @@
 ﻿define([
-	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx", "gfx/matrix", "dcolor/Color"
-], function (require, registerSuite, assert, tu, gfx, m, Color) {
+	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/matrix", "dcolor/Color"
+], function (require, registerSuite, assert, tu, m, Color) {
 
 	var surface, surface2, image, group, image2;
 
@@ -11,7 +11,7 @@
 		setup: function () {
 			surface = tu.createSurface(500, 500);
 
-			image = surface.createImage({width: 150, height: 100, src: url});
+			image = new tu.Image({width: 150, height: 100, src: url}, surface);
 		},
 		teardown: function () {
 			tu.destroySurface(surface);
@@ -138,20 +138,20 @@
 		setup: function () {
 			surface = tu.createSurface(500, 500);
 
-			group = surface.createGroup();
-			var rect = group.createRect({x: 0, y: 0, width: 200, height: 200});
+			group = new tu.Group(surface);
+			var rect = new tu.Rect({x: 0, y: 0, width: 200, height: 200}, group);
 			rect.stroke = "black";
 			rect.fill = new Color([255, 0, 255, 0.5]);
 
-			image = surface.createImage({width: 150, height: 100, src: url});
+			image = new tu.Image({width: 150, height: 100, src: url}, surface);
 
 			group.add(image);
 
 			// static images to see how the size
 
-			surface.createImage({x: 0, y: 200, width: 150, height: 100, src: url});
-			surface.createImage({x: 0, y: 300, width: 300, height: 100, src: url});
-			surface.createImage({x: 300, y: 200, width: 150, height: 200, src: url});
+			new tu.Image({x: 0, y: 200, width: 150, height: 100, src: url}, surface);
+			new tu.Image({x: 0, y: 300, width: 300, height: 100, src: url}, surface);
+			new tu.Image({x: 300, y: 200, width: 150, height: 200, src: url}, surface);
 
 			group.moveToFront();
 		},
@@ -167,7 +167,7 @@
 			});
 		},
 		"transform": function () {
-			group.transform = [gfx.matrix.rotategAt(45, 200, 200), {dx: 200, dy: 200}];
+			group.transform = [m.rotategAt(45, 200, 200), {dx: 200, dy: 200}];
 
 			return tu.compareWithImages(this, surface, {
 				/* jshint maxlen:100000, quotmark:single */
@@ -192,8 +192,8 @@
 			dn.style.width = "602px";
 			dn.style.height = "602px";
 
-			image = surface.createImage({width: 150, height: 100, src: url});
-			image2 = surface2.createImage({width: 150, height: 100, src: url});
+			image = new tu.Image({width: 150, height: 100, src: url}, surface);
+			image2 = new tu.Image({width: 150, height: 100, src: url}, surface2);
 		},
 		teardown: function () {
 			tu.destroySurface(surface);
@@ -259,22 +259,22 @@
 		},
 		"opacity": function () {
 
-			var rect1 = surface.createRect({ x: 0, y: 0, width: 300, height: 200, r: 5 });
+			var rect1 = new tu.Rect({ x: 0, y: 0, width: 300, height: 200, r: 5 }, surface);
 			rect1.fill = "red";
 			rect1.stroke = "black";
-			var img1 = surface.createImage({ width: 300, height: 200, src: url});
+			var img1 = new tu.Image({ width: 300, height: 200, src: url}, surface);
 			img1.transform = { dx: 50, dy: 50 };
-			var rect2 = surface.createRect({ x: 100, y: 100, width: 300, height: 200, r: 5 });
+			var rect2 = new tu.Rect({ x: 100, y: 100, width: 300, height: 200, r: 5 }, surface);
 			rect2.fill = "yellow";
 			rect2.stroke = "black";
-			var img2 = surface.createImage({ width: 300, height: 200, src: require.toUrl("../images/eugene-sm.gif")});
+			var img2 = new tu.Image({ width: 300, height: 200, src: require.toUrl("../images/eugene-sm.gif")}, surface);
 			img2.transform = { dx: 150, dy: 150 };
-			var rect3 = surface.createRect({ x: 200, y: 200, width: 300, height: 200, r: 5 });
+			var rect3 = new tu.Rect({ x: 200, y: 200, width: 300, height: 200, r: 5 }, surface);
 			rect3.fill = "green";
 			rect3.stroke = "black";
-			var img3 = surface.createImage({ width: 300, height: 200, src: require.toUrl("../images/eugene-sm.png")});
+			var img3 = new tu.Image({ width: 300, height: 200, src: require.toUrl("../images/eugene-sm.png")}, surface);
 			img3.transform = { dx: 250, dy: 250 };
-			var rect4 = surface.createRect({ x: 300, y: 300, width: 300, height: 200, r: 5 });
+			var rect4 = new tu.Rect({ x: 300, y: 300, width: 300, height: 200, r: 5 }, surface);
 			rect4.fill = "blue";
 			rect4.stroke = "black";
 

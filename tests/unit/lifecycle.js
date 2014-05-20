@@ -1,6 +1,8 @@
 ﻿define([
-	"intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx", "gfx/registry", "gfx/svg", "gfx/canvas"
-], function (registerSuite, assert, tu, gfx, registry) {
+	"intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/registry", "gfx/svg/Surface", "gfx/svg/Group",
+	"gfx/svg/Rect", "gfx/canvas/Surface", "gfx/canvas/Group", "gfx/canvas/Rect"
+], function (registerSuite, assert, tu, registry, SvgSurface, SvgGroup, SvgRect, CanvasSurface, CanvasGroup, CanvasRect
+	) {
 	var surface, r, p;
 	tu.registerSuite({
 		name: "GFX shape lifecycle",
@@ -14,10 +16,10 @@
 			surface.clear();
 		},
 		"Shape.destroy": function () {
-			r = surface.createRect({
+			r = new tu.Rect({
 				x: 100,
 				y: 100
-			});
+			}, surface);
 			r.fill = "black";
 
 			var uid = r.getUID();
@@ -26,11 +28,11 @@
 			assert.isTrue(!registry.byId(uid), "Unexpected shape.byId return value.");
 		},
 		"Group.clear": function () {
-			r = surface.createGroup();
-			r.createRect({
+			r = new tu.Group(surface);
+			new tu.Rect({
 				x: 100,
 				y: 100
-			});
+			}, r);
 			r.fill = "black";
 
 			var c = r.children[0];
@@ -39,11 +41,11 @@
 			assert.isTrue(!registry.byId(c.getUID()), "Unexpected shape.byId return value.");
 		},
 		"Group.destroy": function () {
-			r = surface.createGroup();
-			r.createRect({
+			r = new tu.Group(surface);
+			new tu.Rect({
 				x: 100,
 				y: 100
-			});
+			}, r);
 			r.fill = "black";
 
 			var uid = r.getUID();
@@ -54,9 +56,9 @@
 			assert.isTrue(r.children.length === 0, "Unexpected children length on disposed group.");
 			assert.isTrue(!registry.byId(r.getUID()), "Unexpected shape.byId return value.");
 
-			r = surface.createGroup();
-			var t2 = r.createGroup();
-			c = t2.createRect();
+			r = new tu.Group(surface);
+			var t2 = new tu.Group(r);
+			c = new tu.Rect(t2);
 			r.removeShape();
 			r.destroy();
 			assert.isTrue(!registry.byId(r.getUID()), "Unexpected shape.byId return value.");
@@ -90,7 +92,7 @@
 					{ offset: 0.8, color: "yellow" }
 				]
 			};
-			r = surface.createRect();
+			r = new SvgRect(surface);
 			r.fill = grad;
 			r.clip = {x: 0, y: 0, width: 300, height: 300};
 
@@ -116,11 +118,11 @@
 					{ offset: 0.8, color: "yellow" }
 				]
 			};
-			var sub1 = surface.createGroup();
+			var sub1 = new SvgGroup(surface);
 			for (var i = 0; i < 100; ++i) {
 				var r = Math.floor(i / 10), offs = 4, cc = r % 2 === 0 ? -offs : offs, x = (i % 10) * 60 + cc, y = r *
 					60 + 5, w = 50, h = 50;
-				var rect = sub1.createRect({x: x, y: y, width: w, height: h});
+				var rect = new SvgRect({x: x, y: y, width: w, height: h}, sub1);
 				rect.fill = grad;
 				rect.clip = {cx: x + w / 2, cy: y + w / 2, rx: 20, ry: 20};
 			}
@@ -147,9 +149,9 @@
 			document.body.removeChild(p);
 		},
 		"canvas": function () {
-			surface.createGroup();
-			var sg = surface.createGroup();
-			sg.createRect();
+			new CanvasGroup(surface);
+			var sg = new CanvasGroup(surface);
+			new CanvasRect(sg);
 			// flush pending makeDirty()
 			surface._render();
 

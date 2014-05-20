@@ -1,34 +1,33 @@
 define([
-	"../_base", "dcl/dcl", "./_ShapeBase"
+	"../_utils", "dcl/dcl", "./_ShapeBase"
 ], function (g, dcl, Shape) {
-	var defaultShape = {
-		// summary:
-		//		An object defining the default Line prototype.
-
-		// type: String
-		//		Specifies this is a Line, value 'line'
-		type: "line",
-
-		// x1: Number
-		//		The X coordinate of the start of the line, default value 0.
-		x1: 0,
-
-		// y1: Number
-		//		The Y coordinate of the start of the line, default value 0.
-		y1: 0,
-
-		// x2: Number
-		//		The X coordinate of the end of the line, default value 100.
-		x2: 100,
-
-		// y2: Number
-		//		The Y coordinate of the end of the line, default value 100.
-		y2: 100
-	};
-	var Line = dcl(Shape, {
+	return dcl(Shape, {
 		// summary:
 		//		a generic line (do not instantiate it directly)
-		shape: defaultShape,
+		shape: {
+			// summary:
+			//		An object defining the default Line prototype.
+
+			// type: String
+			//		Specifies this is a Line, value 'line'
+			type: "line",
+
+			// x1: Number
+			//		The X coordinate of the start of the line, default value 0.
+			x1: 0,
+
+			// y1: Number
+			//		The Y coordinate of the start of the line, default value 0.
+			y1: 0,
+
+			// x2: Number
+			//		The X coordinate of the end of the line, default value 100.
+			x2: 100,
+
+			// y2: Number
+			//		The Y coordinate of the end of the line, default value 100.
+			y2: 100
+		},
 		getBoundingBox: function () {
 			// summary:
 			//		returns the bounding box
@@ -44,6 +43,4 @@ define([
 			return this.bbox;	// gfx.Rectangle
 		}
 	});
-	Line.defaultShape = defaultShape;
-	return Line;
 });

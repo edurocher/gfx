@@ -1,5 +1,5 @@
 ﻿define([
-	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx"
+	"require", "intern!object", "intern/chai!assert", "../utils/testUtils"
 ], function (require, registerSuite, assert, tu) {
 	var surface;
 	tu.registerSuite({
@@ -19,7 +19,7 @@
 				height: 60,
 				src: require.toUrl("../images/eugene-sm.jpg")
 			};
-			var ellipse = surface.createEllipse({cx: 400, cy: 200, rx: 350, ry: 150});
+			var ellipse = new tu.Ellipse({cx: 400, cy: 200, rx: 350, ry: 150}, surface);
 			ellipse.stroke = {color: "blue", width: 1 };
 			ellipse.fill = pattern;
 			tu.compareWithImages(this, surface, {

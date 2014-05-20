@@ -1,7 +1,7 @@
 ﻿define([
 	"intern!object", "intern/chai!assert", "../utils/testUtils", "dcl/advise", "dcolor/Color", "dcolor/utils",
-	"gfx/gfx", "gfx/matrix", "gfx/fx"
-], function (registerSuite, assert, tu, advise, Color, colorUtils, gfx, matrix, fx) {
+	"gfx/matrix", "gfx/fx"
+], function (registerSuite, assert, tu, advise, Color, colorUtils, matrix, fx) {
 
 	var surface, rect, text;
 
@@ -28,14 +28,14 @@
 		setup: function () {
 			surface = tu.createSurface(500, 500);
 
-			rect = surface.createRect({x: 100, y: 100, width: 300, height: 300});
+			rect = new tu.Rect({x: 100, y: 100, width: 300, height: 300}, surface);
 			rect.fill = "yellow";
 			rect.stroke = {
 				color: "green",
 				width: 5,
 				join: "round"
 			};
-			text = surface.createText({x: 250, y: 250, text: "Hello!", align: "middle"});
+			text = new tu.Text({x: 250, y: 250, text: "Hello!", align: "middle"}, surface);
 			text.fill = "black";
 			text.font = {family: "serif", size: "10pt"};
 
@@ -52,8 +52,8 @@
 				join: {values: ["bevel", "round"]}
 			}), function (r) {
 				assert.deepEqual(rect.stroke.color,
-					colorUtils.blendColors(gfx.normalizeColor(Color.fromString("green")),
-						gfx.normalizeColor(Color.fromString("red")), r), "stroke color at " + r);
+					colorUtils.blendColors(Color.fromString("green"), Color.fromString("red"), r),
+					"stroke color at " + r);
 				assert.equal(rect.stroke.width, 5 + 10 * r, "stroke width at " + r);
 				assert.equal(rect.stroke.join, r < 0.5 ? "bevel" : "round", "stroke join at " + r);
 			});
@@ -64,8 +64,9 @@
 				shape: rect,
 				color: {start: "yellow", end: "blue"}
 			}), function (r) {
-				assert.deepEqual(rect.fill, colorUtils.blendColors(gfx.normalizeColor(Color.fromString("yellow")),
-					gfx.normalizeColor(Color.fromString("blue")), r), "fill color at " + r);
+				assert.deepEqual(rect.fill,
+					colorUtils.blendColors(Color.fromString("yellow"), Color.fromString("blue"), r),
+					"fill color at " + r);
 			});
 		},
 		"font": function () {

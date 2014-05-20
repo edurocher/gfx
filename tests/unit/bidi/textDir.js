@@ -1,6 +1,6 @@
 ﻿define([
-	"intern!object", "intern/chai!assert", "../../utils/testUtils", "gfx/gfx", "gfx/matrix"
-], function (registerSuite, assert, tu, gfx, m) {
+	"intern!object", "intern/chai!assert", "../../utils/testUtils", "gfx/matrix"
+], function (registerSuite, assert, tu, m) {
 
 	var CPD = 30, tp1, tp2, tp3, tp4, tp5, tp6, t1, t2, t3, t4, t5, t6;
 	var g1 = null, g2 = null, g3, g4;
@@ -8,12 +8,12 @@
 	var surfaceLTR = null, surfaceRTL = null, surfaceAUTO = null;
 
 	function placeAnchor(surface, x, y) {
-		surface.createLine({x1: x - 2, y1: y, x2: x + 2, y2: y});
-		surface.createLine({x1: x, y1: y - 2, x2: x, y2: y + 2});
+		new tu.Line({x1: x - 2, y1: y, x2: x + 2, y2: y}, surface);
+		new tu.Line({x1: x, y1: y - 2, x2: x, y2: y + 2}, surface);
 	}
 
 	function makeText(surface, text, font, fill, stroke) {
-		var t = surface.createText(text);
+		var t = new tu.Text(text, surface);
 		if (font) {
 			t.font = font;
 		}
@@ -36,7 +36,7 @@
 	function makeShapes() {
 		surfaceLTR = gfx.createSurface(createDiv(), 500, 170, "ltr");
 		console.debug("surfaceLTR created");
-		surfaceLTR.createPath({}).moveTo(0, 15).setAbsoluteMode(false).curveTo(CPD, 0, 0, 0, 50, 0);
+		new tu.Path({}, surfaceLTR).moveTo(0, 15).setAbsoluteMode(false).curveTo(CPD, 0, 0, 0, 50, 0);
 
 		console.debug("p created");
 		tp1 = surfaceLTR.createTextPath({
@@ -56,7 +56,7 @@
 		tp2.fill = "blue";
 
 		console.debug("tp2 created");
-		g1 = surfaceLTR.createGroup();
+		g1 = new tu.Group(surfaceLTR);
 		g1.textDir = "rtl";
 		//		surfaceLTR.textDir = "ltr";
 		t1 = makeText(g1, {id: "t1", x: 0, y: 100, text: "1.) \u05d4\u05ea\u05d7\u05dc\u05d4 end!"},
@@ -69,7 +69,7 @@
 
 		surfaceRTL = gfx.createSurface(createDiv(), 500, 170);
 		console.debug("surfaceRTL created");
-		surfaceRTL.createPath({}).moveTo(0, 15).setAbsoluteMode(false).curveTo(CPD, 0, 0, 0, 100, 0);
+		new tu.Path({}, surfaceRTL).moveTo(0, 15).setAbsoluteMode(false).curveTo(CPD, 0, 0, 0, 100, 0);
 
 		console.debug("p2 created");
 		tp3 = surfaceRTL.createTextPath({
@@ -80,13 +80,13 @@
 		tp3.font = {family: "times", size: "12pt"};
 		tp3.fill = "red";
 
-		g2 = surfaceRTL.createGroup();
+		g2 = new tu.Group(surfaceRTL);
 		g2.add(tp3);
 		g2.textDir = "ltr";
 
-		g3 = g2.createGroup("rtl");
+		g3 = new tu.Group("rtl", g2);
 
-		g4 = surfaceRTL.createGroup("auto");
+		g4 = new tu.Group("auto", surfaceRTL);
 		console.debug("tp3 created");
 		tp4 = surfaceRTL.createTextPath({
 			text: "Beginning \u05e1\u05d5\u05e3.",
@@ -110,7 +110,7 @@
 
 		surfaceAUTO = gfx.createSurface(createDiv(), 500, 170, "auto");
 		console.debug("surfaceAUTO created");
-		surfaceAUTO.createPath({}).moveTo(0, 15).setAbsoluteMode(false).curveTo(CPD, 0, 0, 0, 100, 0);
+		new tu.Path({}, surfaceAUTO).moveTo(0, 15).setAbsoluteMode(false).curveTo(CPD, 0, 0, 0, 100, 0);
 
 		console.debug("p3 created");
 

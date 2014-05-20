@@ -7,6 +7,9 @@ define([
 		_renderShape: function () {
 			// nothing for the moment
 		},
+		_setTextPath: function () {
+			// not implemented
+		},
 		_setText: function () {
 			// not implemented
 		},

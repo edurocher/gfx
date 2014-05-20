@@ -1,5 +1,5 @@
 define([
-	"dcl/dcl", "dojo/_base/sniff", "../_base", "./_base", "./Shape", "../shape/_TextBase", "./Font",
+	"dcl/dcl", "dojo/_base/sniff", "../_utils", "./_utils", "./Shape", "../shape/_TextBase", "./Font",
 	"dojo/has!dojo-bidi?./bidi/Text"
 ], function (dcl, has, g, svg, SvgShape, TextBase, Font, SvgBidiText) {
 	var android = has("android"), textRenderingFix = has("chrome") || (android && android >= 4) ? "auto" :
@@ -13,7 +13,7 @@ define([
 			//		sets a text shape object (SVG)
 			// newShape: Object
 			//		a text shape object
-			this._set("shape", g.makeParameters(this._get("shape"), newShape));
+			this._set("shape", g._makeParameters(this._get("shape"), newShape));
 			this.bbox = null;
 			var r = this.rawNode, s = this._get("shape");
 			r.setAttribute("x", s.x);

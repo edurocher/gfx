@@ -1,5 +1,5 @@
 define([
-	"dcl/dcl", "../_base", "./Shape", "../shape/_RectBase"
+	"dcl/dcl", "../_utils", "./Shape", "../shape/_RectBase"
 ], function (dcl, g, SvgShape, RectBase) {
 	var Rect = dcl([SvgShape, RectBase], {
 		// summary:
@@ -9,7 +9,7 @@ define([
 			//		sets a rectangle shape object (SVG)
 			// newShape: Object
 			//		a rectangle shape object
-			this._set("shape", g.makeParameters(this.shape, newShape));
+			this._set("shape", g._makeParameters(this.shape, newShape));
 			this.bbox = null;
 			for (var i in this.shape) {
 				if (i !== "type" && i !== "r") {

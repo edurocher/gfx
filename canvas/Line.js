@@ -1,5 +1,5 @@
 define([
-	"dcl/dcl", "./_base", "./Shape", "../shape/_LineBase"
+	"dcl/dcl", "./_utils", "./Shape", "../shape/_LineBase"
 ], function (dcl, canvas, CanvasShape, LineBase) {
 	return dcl([CanvasShape, LineBase], {
 		// summary:

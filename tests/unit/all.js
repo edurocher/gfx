@@ -1,6 +1,6 @@
 // Listing of all the GFX unit tests
 define([
-	"./_base",
+	"./_utils",
 	"./arc",
 	"./batch",
 	"./bezier",
@@ -11,6 +11,7 @@ define([
 	"./destroy",
 	"./fill",
 	"./filters",
+	"./font",
 	"./fx",
 	"./gradients",
 	"./group",
@@ -30,7 +31,6 @@ define([
 	"./shapes",
 	"./surfaceClip",
 	"./svgMask",
-	"./switchTo",
 	"./text",
 	"./textPath",
 	"./transform",

@@ -16,8 +16,9 @@
             data-dojo-config="async:1"></script>
     <script type="text/javascript">
         require([
-            "dojo/ready", "dojo/dom", "dojo/json", "gfx/gfx", "gfx/matrix", "gfx/utils"
-        ], function (ready, dom, json, gfx, matrix, gfxUtils) {
+            "dojo/ready", "dojo/dom", "dojo/json", "gfx/Surface", "gfx/Group", "gfx/Line", "gfx/Rect", "gfx/Path",
+            "gfx/matrix", "gfx/utils"
+        ], function (ready, dom, json, Surface, Group, Line, Rect, Path, matrix, gfxUtils) {
             surface = null;
             grid_size = 500;
             grid_step = 50;
@@ -25,33 +26,35 @@
             init = function () {
                 // initialize graphics
                 var container = dom.byId("gfx");
-                surface = gfx.createSurface(container, 500, 500);
+                surface = new Surface(container, 500, 500);
                 // create a picture
 
                 // make a grid
-                var grid = surface.createGroup();
+                var grid = new Group(surface);
                 for (var i = 0; i <= grid_size; i += grid_step) {
-                    grid.createLine({x1: 0, x2: grid_size, y1: i, y2: i}).stroke = "black";
-                    grid.createLine({y1: 0, y2: grid_size, x1: i, x2: i}).stroke = "black";
+                    new Line({shape: {x1: 0, x2: grid_size, y1: i, y2: i}, stroke: "black"}, grid);
+                    new Line({shape: {y1: 0, y2: grid_size, x1: i, x2: i}, stroke: "black"}, grid);
                 }
 
                 // make a checkerboard
-                var board = surface.createGroup(), gs2 = grid_step * 2;
+                var board = new Group(surface), gs2 = grid_step * 2;
                 for (var i = 0; i < grid_size; i += grid_step) {
                     for (var j = 0; j < grid_size; j += grid_step) {
                         if (i % gs2 === j % gs2) {
-                            board.createRect({x: i, y: j, width: grid_step, height: grid_step}).fill = [255, 0, 0, 0.1];
+                            new Rect({
+                                shape: {x: i, y: j, width: grid_step, height: grid_step},
+                                fill: [255, 0, 0, 0.1]}, board);
                         }
                     }
                 }
 
                 // draw test_transform shapes
-                var g1 = surface.createGroup();
-                var r1 = g1.createShape({type: "rect", x: 200, y: 200});
+                var g1 = new Group(surface);
+                var r1 = gfxUtils.createShape({type: "rect", x: 200, y: 200}, g1);
                 r1.fill = "green";
                 r1.stroke = {};
 
-                var r2 = surface.createShape({type: "rect"});
+                var r2 = gfxUtils.createShape({type: "rect"}, surface);
                 r2.stroke = {};
                 r2.fill = {type: "linear", to: {x: 50, y: 100},
                     colors: [
@@ -61,24 +64,24 @@
                     ] };
                 r2.transform = {dx: 100, dy: 100};
 
-                var r3 = surface.createRect();
+                var r3 = new Rect(surface);
                 r3.stroke = {};
                 r3.fill = { type: "linear" };
 
-                var r4 = g1.createShape({type: "rect"});
+                var r4 = gfxUtils.createShape({type: "rect"}, g1);
                 r4.fill = "blue";
                 r4.transform = [matrix.rotategAt(-30, 350, 250), { dx: 300, dy: 200 }];
 
-                var p1 = g1.createShape({type: "path"}).moveTo(300, 100).lineTo(400, 200).lineTo(400, 300).lineTo(300,
+                var p1 = gfxUtils.createShape({type: "path"}, g1).moveTo(300, 100).lineTo(400, 200).lineTo(400, 300).lineTo(300,
                         400).curveTo(400, 300, 400, 200, 300, 100);
                 p1.stroke = {};
                 p1.transform = {};
 
-                var p2 = g1.createShape(p1.shape);
+                var p2 = gfxUtils.createShape(p1.shape, g1);
                 p2.stroke = {color: "red", width: 2};
                 p2.transform = {dx: 100};
 
-                var p3 = g1.createShape({type: "path"}).moveTo(300, 100).setAbsoluteMode(false).lineTo(100,
+                var p3 = gfxUtils.createShape({type: "path"}, g1).moveTo(300, 100).setAbsoluteMode(false).lineTo(100,
                         100).lineTo(0, 100).lineTo(-100, 100).curveTo(100, -100, 100, -200, 0, -300);
                 p3.stroke = {color: "blue", width: 2};
                 p3.transform = matrix.rotategAt(180, 250, 250);

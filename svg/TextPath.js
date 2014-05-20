@@ -1,5 +1,5 @@
 define([
-	"dcl/dcl", "../_base", "./_base", "./Shape", "../shape/_TextPathBase", "./Font", "dojo/has",
+	"dcl/dcl", "../_utils", "./_utils", "./Shape", "../shape/_TextPathBase", "./Font", "dojo/has",
 	"dojo/has!dojo-bidi?./bidi/TextPath"
 ], function (dcl, g, svg, SvgShape, TextPathBase, Font, has, SvgBidiTextPath) {
 	var TextPath = dcl([SvgShape, TextPathBase, Font], {
@@ -13,17 +13,6 @@ define([
 				//		a segment
 				sup.apply(this, arguments);
 				this._setTextPath();
-			};
-		}),
-		_setShapeAttr: dcl.superCall(function (sup) {
-			return function (/*===== newShape =====*/) {
-				// summary:
-				//		forms a path using a shape (SVG)
-				// newShape: Object
-				//		an SVG path string or a path object (see gfx.defaultPath)
-				sup.apply(this, arguments);
-				this._setTextPath();
-				return this;	// self
 			};
 		}),
 		_setTextPath: function () {

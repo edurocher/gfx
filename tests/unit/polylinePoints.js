@@ -1,6 +1,6 @@
 ﻿define([
-	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx"
-], function (require, registerSuite, assert, tu, gfx) {
+	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/matrix"
+], function (require, registerSuite, assert, tu, matrix) {
 
 	var surface;
 
@@ -14,22 +14,22 @@
 		},
 		"polyline": function () {
 
-			var poly1 = surface.createPolyline([
+			var poly1 = new tu.Polyline([
 				{x: 150, y: 50},
 				{x: 200, y: 100},
 				{x: 150, y: 150},
 				{x: 100, y: 100},
 				{x: 150, y: 50}
-			]);
+			], surface);
 			poly1.stroke = {color: "blue"};
 			var bbox1 = poly1.getBoundingBox();
 
-			var poly2 = surface.createPolyline([150, 50, 200, 100, 150, 150, 100, 100, 150, 50]);
+			var poly2 = new tu.Polyline([150, 50, 200, 100, 150, 150, 100, 100, 150, 50], surface);
 			poly2.stroke = {color: "blue"};
-			poly2.transform = gfx.matrix.translate(200, 0);
+			poly2.transform = matrix.translate(200, 0);
 			var bbox2 = poly2.getBoundingBox();
 
-			var poly3 = surface.createPolyline();
+			var poly3 = new tu.Polyline(surface);
 			var bbox3 = poly3.getBoundingBox();
 
 			assert.deepEqual(bbox1, bbox2, "Bboxes should be equal");

@@ -13,10 +13,10 @@
 
 require([
     "dojo/_base/lang", "dojo/dom", "dojo/on", "dojo/topic", "dojo/aspect", "dcolor/Color", "dojo/_base/fx", "dojo/fx",
-    "dojo/_base/event", "gfx/gfx", "gfx/Moveable", "gfx/fx", "dcolor/ExtendedColor"
-], function (lang, dom, on, topic, aspect, Color, baseFx, coreFx, event, gfx, Moveable, gfxFx) {
-
-    var g = gfx, m = g.matrix;
+    "dojo/_base/event", "gfx/Surface", "gfx/Rect", "gfx/Text", "gfx/Circle", "gfx/matrix", "gfx/Moveable", "gfx/f" +
+            "x", "dcolor/ExtendedColor"
+], function (lang, dom, on, topic, aspect, Color, baseFx, coreFx, event, Surface, Rect, Text, Circle, matrix, Moveable,
+        gfxFx) {
 
     var container, surface, surface_size, vat, freezer, broiler, score, startTime, endTime;
 
@@ -40,8 +40,8 @@ require([
     }
 
     function getCenter(circle) {
-        var shape = circle.shape, matrix = circle.transform;
-        return m.multiplyPoint(matrix ? matrix : m.identity, shape.cx, shape.cy);
+        var shape = circle.shape;
+        return matrix.multiplyPoint(circle.transform || matrix.identity, shape.cx, shape.cy);
     }
 
     function getDuration(x1, y1, x2, y2, rate) {
@@ -104,11 +104,12 @@ require([
     }
 
     function showStatus(circle, text) {
-        var c = getCenter(circle), status = surface.createText({});
+        var c = getCenter(circle), status = new Text();
         status.moveToBack();
         status.fill = new Color([0, 0, 0, 0.5]);
         status.font = {family: "serif", variant: "small-caps", weight: "bold"};
         status.shape = {x: c.x, y: c.y, text: text, align: "middle"};
+        surface.add(status);
         var anim = coreFx.combine([
             gfxFx.animateFill({
                 shape: status,
@@ -237,10 +238,10 @@ require([
             duration: freezeTime,
             curve: [0, freezeTime]
         });
-        var matrix = this.transform, c = getCenter(this);
+        var m = this.transform, c = getCenter(this);
         aspect.after(anim2, "onAnimate", lang.hitch(this, function (val) {
             var scale = (val % pulseTime) / pulseTime / 4 + 1;
-            this.transform = [m.scaleAt(scale, c), matrix];
+            this.transform = [matrix.scaleAt(scale, c), m];
         }), true);
         this.anim = coreFx.combine([anim1, anim2]);
         aspect.after(this.anim, "onEnd", lang.hitch(this, function () {
@@ -262,10 +263,10 @@ require([
             duration: freezeTime,
             curve: [0, freezeTime]
         });
-        var matrix = this.transform, c = getCenter(this);
+        var m = this.transform, c = getCenter(this);
         aspect.after(anim2, "onAnimate", lang.hitch(this, function (val) {
             var scale = (val % pulseTime) / pulseTime / 4 + 1;
-            this.transform = [m.scaleAt(scale, c), matrix];
+            this.transform = [matrix.scaleAt(scale, c), m];
         }), true);
         this.anim = coreFx.combine([anim1, anim2]);
         aspect.after(this.anim, "onEnd", lang.hitch(this, repeatBurn));
@@ -314,7 +315,7 @@ require([
         var rect = vat.shape;
         for (var i = 0; i < n; ++i) {
             var cx = getRand(rect.x + radius, rect.x + rect.width - radius), cy = getRand(rect.y + radius,
-                    rect.y + rect.height - radius), patty = surface.createCircle({
+                    rect.y + rect.height - radius), patty = new Circle({
                 cx: cx, cy: cy, r: radius
             });
             patty.fill = "green";
@@ -324,43 +325,66 @@ require([
             };
             patty.status = "fresh";
             patty.moveable = new Moveable(patty);
+            surface.add(patty);
             repeatMove.call(patty);
         }
     }
 
     function initGfx() {
         container = dom.byId("gfx_holder");
-        surface = g.createSurface(container, 500, 500);
+        surface = new Surface(container, 500, 500);
         surface_size = {width: 500, height: 500};
 
-        vat = surface.createRect({x: 10, y: 210, width: 480, height: 180});
+        vat = new Rect({x: 10, y: 210, width: 480, height: 180});
         vat.stroke = {color: "black", width: 7, join: "round"};
-        surface.createText({x: 15, y: 230, text: "Ye Olde Vat v3.2"}).fill = "black";
-
-        freezer = surface.createRect({x: 10, y: 10, width: 230, height: 180});
-        freezer.stroke = {color: "blue", width: 7, join: "round"};
-        surface.createText({x: 15, y: 30, text: "Deep Freeze 7000"}).fill = "blue";
-
-        broiler = surface.createRect({x: 260, y: 10, width: 230, height: 180})
-        broiler.stroke = {color: "red", width: 7, join: "round"};
-        surface.createText({x: 265, y: 30, text: "Hellfire Broiler A4"}).fill = "red";
+        surface.add(vat);
 
         var t;
-        t = surface.createText({x: 15, y: 420, text: "Good:"});
+
+        t = new Text({x: 15, y: 230, text: "Ye Olde Vat v3.2"});
+        t.fill = "black";
+        surface.add(t);
+
+        freezer = new Rect({x: 10, y: 10, width: 230, height: 180});
+        freezer.stroke = {color: "blue", width: 7, join: "round"};
+        surface.add(freezer);
+
+        t = new Text({x: 15, y: 30, text: "Deep Freeze 7000"});
+        t.fill = "blue";
+        surface.add(t);
+
+        broiler = new Rect({x: 260, y: 10, width: 230, height: 180});
+        broiler.stroke = {color: "red", width: 7, join: "round"};
+        surface.add(broiler);
+
+        t = new Text({x: 265, y: 30, text: "Hellfire Broiler A4"});
+        t.fill = "red";
+        surface.add(t);
+
+        t = new Text({x: 15, y: 420, text: "Good:"});
         t.font = {weight: "bold"};
         t.fill = "green";
-        t = surface.createText({x: 15, y: 450, text: "Bad:"});
+        surface.add(t);
+
+        t = new Text({x: 15, y: 450, text: "Bad:"});
         t.font = {weight: "bold"};
         t.fill = "red";
-        t = surface.createText({x: 15, y: 480, text: "Total:"});
+        surface.add(t);
+
+        t = new Text({x: 15, y: 480, text: "Total:"});
         t.font = {weight: "bold"};
         t.fill = "black";
-        score = surface.createText({x: 80, y: 485, text: "0"});
+        surface.add(t);
+
+        score = new Text({x: 80, y: 485, text: "0"});
         score.font = {weight: "bold", size: "24pt"};
         score.fill = "black";
-        t = surface.createText({x: 120, y: 460, text: "DROP HERE!"});
+        surface.add(score);
+
+        t = new Text({x: 120, y: 460, text: "DROP HERE!"});
         t.font = {size: "50px"};
         t.fill = new Color([0, 0, 0, 0.1]);
+        surface.add(t);
         t.moveToBack();
 
         topic.subscribe("/gfx/move/start", drag);

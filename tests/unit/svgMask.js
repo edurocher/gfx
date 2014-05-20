@@ -1,6 +1,7 @@
 ﻿define([
-	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx", "gfx/svg/Mask"
-], function (require, registerSuite, assert, tu) {
+	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/svg/Mask", "gfx/svg/Group",
+	"gfx/svg/Rect", "gfx/svg/Text", "gfx/svg/Image"
+], function (require, registerSuite, assert, tu, Mask, Group, Rect, Text, Image) {
 	var surface;
 
 	registerSuite({
@@ -13,16 +14,16 @@
 		teardown: function () {
 			tu.destroySurface(surface);
 		},
-		beforeEach: function(){
+		beforeEach: function () {
 			surface.clear();
 		},
 		"Surface.createMask": function () {
-			var mask = surface.createMask({});
+			var mask = new Mask({}, surface);
 			assert.equal(mask.parent, surface, "mask parent should be the surface");
 			assert.equal(mask.rawNode.parentNode, surface.defNode, "mask parent node should be the svg def node");
 		},
 		"Shape.mask = mask": function () {
-			var rect = surface.createRect({}), mask = surface.createMask({});
+			var rect = new Rect({}, surface), mask = new Mask({}, surface);
 
 			assert.equal(rect.mask, null);
 			rect.mask = mask;
@@ -31,7 +32,7 @@
 			assert.equal(RegExp.$1, mask.shape.id);
 		},
 		"Shape.mask = null": function () {
-			var rect = surface.createRect({}), mask = surface.createMask({});
+			var rect = new Rect({}, surface), mask = new Mask({}, surface);
 
 			assert.equal(rect.mask, null);
 			rect.mask = mask;
@@ -41,7 +42,7 @@
 			assert.isFalse(rect.rawNode.hasAttribute("mask"));
 		},
 		"Mask.shape = shapeWithId": function () {
-			var mask = surface.createMask({});
+			var mask = new Mask({}, surface);
 
 			var shape = {
 				id: "a-mask-id",
@@ -58,7 +59,7 @@
 			}
 		},
 		"Mask.shape = shapeWithoutId": function () {
-			var mask = surface.createMask({});
+			var mask = new Mask({}, surface);
 
 			var shape = {
 				x: 1,
@@ -74,21 +75,21 @@
 
 		},
 		"Surface.remove(mask)": function () {
-			var mask = surface.createMask({});
+			var mask = new Mask({}, surface);
 			surface.remove(mask);
 			assert.equal(mask.parent, null);
 			assert.equal(mask.rawNode.parentNode, null);
 		},
 		"Surface.add(mask)": function () {
-			var mask = surface.createMask({});
+			var mask = new Mask({}, surface);
 			surface.remove(mask);
 			surface.add(mask);
 			assert.equal(mask.parent, surface);
 			assert.equal(mask.rawNode.parentNode, surface.defNode);
 		},
 		"Mask.createXxx/add/remove": function () {
-			var mask = surface.createMask({});
-			var rect = mask.createRect({});
+			var mask = new Mask({}, surface);
+			var rect = new Rect({}, mask);
 			assert.equal(rect.getParent(), mask);
 			mask.remove(rect);
 			assert.equal(rect.getParent(), null);
@@ -99,8 +100,8 @@
 
 			var d = surface.getDimensions(), w = d.width, h = d.height;
 
-			var group = surface.createGroup();
-			var rect = group.createRect({width: w, height: h});
+			var group = new Group(surface);
+			var rect = new Rect({width: w, height: h}, group);
 			rect.fill = "blue";
 
 			// Create mask with the same dimensions as the group
@@ -109,43 +110,43 @@
 				height: 1,
 				maskContentUnits: "objectBoundingBox"
 			};
-			var mask = surface.createMask(maskShape);
+			var mask = new Mask(maskShape, surface);
 
 			// By default, the mask is applied as if initialized to black (i.e., #000)
 			// and will completely mask out objects painted through it.
 			// Create a white (i.e., #fff) rectangle in the dimensions of the mask
 			// so no painting is masked out by default.
-			mask.createRect({
+			new Rect({
 				width: 0.5,
 				height: 1
-			}).fill = "#fff";
+			}, mask).fill = "#fff";
 
 			var margin = 0.1;
-			mask.createRect({
+			new Rect({
 				x: margin,
 				y: margin,
 				width: 0.5 - margin * 2,
 				height: 1 - margin * 2
-			}).fill = "black";
+			}, mask).fill = "black";
 
 			group.mask = mask;
 
 			var textMargin = 60;
-			var text = surface.createText({
+			var text = new Text({
 				x: w / 2 + textMargin,
 				y: textMargin,
 				text: "Masked Text"
-			});
+			}, surface);
 			text.fill = "red";
 			text.stroke = "purple";
 			text.font = {
 				size: "40px"
 			};
-			var maskForText = surface.createMask(maskShape);
-			maskForText.createRect({
+			var maskForText = new Mask(maskShape, surface);
+			new Rect({
 				width: 1,
 				height: 1
-			}).fill = {
+			}, maskForText).fill = {
 				type: "linear",
 				x2: 1,
 				y2: 0,
@@ -156,19 +157,19 @@
 			};
 			text.mask = maskForText;
 
-			var image = surface.createImage({
+			var image = new Image({
 				x: 300,
 				y: 100,
 				width: 300,
 				height: 300,
 				src: require.toUrl("../images/maps.png")
-			});
-			var textMask = surface.createMask({});
-			text = textMask.createText({
+			}, surface);
+			var textMask = new Mask({}, surface);
+			text = new Text({
 				x: 375,
 				y: 250,
 				text: "Text Mask"
-			});
+			}, textMask);
 			text.fill = "white";
 			text.font = {
 				size: "40px"

@@ -1,7 +1,6 @@
 define([
-	"dojo/_base/lang", "dcl/dcl", "dojo/_base/sniff", "dojo/on", "./_EventsProcessing", "./_ContainerBase",
-	"./_CreatorBase", "delite/Stateful"
-], function (lang, dcl, has, on, EventsProcessing, Container, Creator, Stateful) {
+	"dojo/_base/lang", "dcl/dcl", "dojo/_base/sniff", "dojo/on", "./_EventsProcessing", "./_ContainerBase", "delite/Stateful"
+], function (lang, dcl, has, on, EventsProcessing, Container, Stateful) {
 
 	function _empty(/*DomNode*/ node) {
 		if (node.canHaveChildren) {
@@ -41,9 +40,15 @@ define([
 		_destroy(node, node.parentNode);
 	}
 
-	return dcl([Stateful, EventsProcessing, Container, Creator], {
+	return dcl([Stateful, EventsProcessing, Container], {
 		// summary:
 		//		a surface object to be used for drawings
+
+		_isSurface: true,
+
+		// renderer: String
+		//		The underlying renderer used by this surface ("svg" or "canvas").
+		renderer: null,
 
 		processConstructorParameters: function () {
 			// summary:

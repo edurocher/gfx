@@ -1,5 +1,5 @@
 define([
-	"dcl/dcl", "dojo/_base/lang", "dojo/dom", "../_base", "./_base"
+	"dcl/dcl", "dojo/_base/lang", "dojo/dom", "../_utils", "./_utils"
 ], function (dcl, lang, dom, g, svg) {
 
 	var filters = {

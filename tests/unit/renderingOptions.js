@@ -1,6 +1,7 @@
 ﻿define([
-	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx", "gfx/matrix"
-], function (require, registerSuite, assert, tu, gfx, matrix) {
+	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/matrix", "gfx/svg/Group",
+	"gfx/svg/Line", "gfx/svg/Text"
+], function (require, registerSuite, assert, tu, matrix, Group, Line, Text) {
 	var surface, parent, g, s;
 	registerSuite({
 		name: "SVG rendering options",
@@ -16,41 +17,41 @@
 		},
 		"shape-rendering": function () {
 			["auto", "optimizeSpeed", "crispEdges", "geometricPrecision"].forEach(function (opt, idx) {
-				g = surface.createGroup();
+				g = new Group(surface);
 				g.transform = matrix.translate(0, 20 * idx);
-				s = g.createLine({
+				s = new Line({
 					x1: 10,
 					y1: 10,
 					x2: 490,
 					y2: 100
-				});
+				}, g);
 				s.stroke = "blue";
 				s.addRenderingOption("shape-rendering", opt);
-				s = g.createText({
+				s = new Text({
 					x: 490,
 					y: 100,
 					text: opt
-				});
+				}, g);
 				s.fill = "black";
 			});
-			parent = surface.createGroup();
+			parent = new Group(surface);
 			parent.transform = matrix.translate(0, 80);
 			["auto", "optimizeSpeed", "crispEdges", "geometricPrecision"].forEach(function (opt, idx) {
-				g = parent.createGroup();
+				g = new Group(parent);
 				g.transform = matrix.translate(0, 20 * idx);
-				s = g.createLine({
+				s = new Line({
 					x1: 10,
 					y1: 100,
 					x2: 490,
 					y2: 100
-				});
+				}, g);
 				s.stroke = "blue";
 				s.addRenderingOption("shape-rendering", opt);
-				s = g.createText({
+				s = new Text({
 					x: 490,
 					y: 100,
 					text: opt
-				});
+				}, g);
 				s.fill = "black";
 			});
 			tu.compare(surface, {
@@ -60,15 +61,15 @@
 			});
 		},
 		"text-rendering": function () {
-			parent = surface.createGroup();
+			parent = new Group(surface);
 			["auto", "optimizeSpeed", "optimizeLegibility", "geometricPrecision"].forEach(function (opt, idx) {
-				g = parent.createGroup();
+				g = new Group(parent);
 				g.transform = matrix.translate(0, 20 * idx);
-				s = g.createText({
+				s = new Text({
 					x: 50,
 					y: 50,
 					text: "LYoWAT	ff fi fl ffl  (" + opt + ")"
-				});
+				}, g);
 				s.fill = "black";
 				s.font = {size: "23px", family: "Calibri, Constantia"};
 				s.addRenderingOption("text-rendering", opt);

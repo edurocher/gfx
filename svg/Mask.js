@@ -1,6 +1,6 @@
 define([
-	"dcl/dcl", "./Shape", "./Container", "./Creator", "../_base"
-], function (dcl, SvgShape, SvgContainer, SvgCreator, gfxBase) {
+	"dcl/dcl", "./Shape", "./Container", "../_utils"
+], function (dcl, SvgShape, SvgContainer, gfxBase) {
 
 	var defaultShape = {
 		// summary:
@@ -44,7 +44,7 @@ define([
 		maskContentUnits: "userSpaceOnUse"
 	};
 
-	var Mask = dcl([SvgShape, SvgContainer, SvgCreator], {
+	var Mask = dcl([SvgShape, SvgContainer], {
 		// summary:
 		//		An SVG mask object
 		// description:
@@ -71,9 +71,6 @@ define([
 			};
 		})
 	});
-
 	Mask.nodeType = "mask";
-	Mask.defaultShape = defaultShape;
-
 	return Mask;
 });

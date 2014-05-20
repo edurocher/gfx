@@ -1,16 +1,16 @@
 ﻿define([
-	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx", "gfx/matrix"
-], function (require, registerSuite, assert, tu, gfx, matrix) {
+	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/matrix"
+], function (require, registerSuite, assert, tu, matrix) {
 
 	var surface, clipped = [];
 
 	var drawGrid = function () {
 		var sz = surface.getDimensions();
 		for (var r = 0; r < sz.height; r += 50) {
-			surface.createLine({y1: r, x1: 0, x2: sz.width, y2: r}).stroke = {width: 1, color: "#cfcfcf"};
+			new tu.Line({y1: r, x1: 0, x2: sz.width, y2: r}, surface).stroke = {width: 1, color: "#cfcfcf"};
 		}
 		for (var c = 0; c < sz.width; c += 50) {
-			surface.createLine({y1: 0, x1: c, x2: c, y2: sz.height}).stroke = {width: 1, color: "#cfcfcf"};
+			new tu.Line({y1: 0, x1: c, x2: c, y2: sz.height}, surface).stroke = {width: 1, color: "#cfcfcf"};
 		}
 	};
 
@@ -27,67 +27,67 @@
 		"clipping": function () {
 
 			drawGrid();
-			var imageShape = surface.createImage({src: img, width: 200, height: 200});
+			var imageShape = new tu.Image({src: img, width: 200, height: 200}, surface);
 			imageShape.clip = {x: 10, y: 80, width: 50, height: 50};
 			imageShape.transform = matrix.translate(200, 200);
 			clipped.push(imageShape);
-			var rect = surface.createRect({width: 200, height: 200});
+			var rect = new tu.Rect({width: 200, height: 200}, surface);
 			rect.stroke = "red";
 			rect.transform = matrix.translate(200, 200);
 			// clip = ellipse
-			imageShape = surface.createImage({src: img, x: 100, y: 50, width: 200, height: 200});
+			imageShape = new tu.Image({src: img, x: 100, y: 50, width: 200, height: 200}, surface);
 			imageShape.clip = {cx: 200, cy: 100, rx: 20, ry: 30};
 			clipped.push(imageShape);
-			surface.createRect({x: 100, y: 50, width: 200, height: 200}).stroke = "green";
+			new tu.Rect({x: 100, y: 50, width: 200, height: 200}, surface).stroke = "green";
 			// clip = circle
-			imageShape = surface.createImage({src: img, x: 0, y: 350, width: 200, height: 200});
+			imageShape = new tu.Image({src: img, x: 0, y: 350, width: 200, height: 200}, surface);
 			imageShape.clip = {cx: 100, cy: 425, rx: 60, ry: 60};
 			clipped.push(imageShape);
-			surface.createRect({x: 0, y: 350, width: 200, height: 200}).stroke = "blue";
+			new tu.Rect({x: 0, y: 350, width: 200, height: 200}, surface).stroke = "blue";
 			// clip = path
-			imageShape = surface.createImage({src: img, x: 300, y: 350, width: 200, height: 200});
+			imageShape = new tu.Image({src: img, x: 300, y: 350, width: 200, height: 200}, surface);
 			imageShape.clip = {d: "M 350,350 C314,414 317,557 373,450.0000 z"};
 			clipped.push(imageShape);
-			surface.createRect({x: 300, y: 350, width: 200, height: 200}).stroke = "#00FFFF";
+			new tu.Rect({x: 300, y: 350, width: 200, height: 200}, surface).stroke = "#00FFFF";
 			// clip = polyline
-			imageShape = surface.createImage({src: img, x: 300, y: 0, width: 200, height: 200});
+			imageShape = new tu.Image({src: img, x: 300, y: 0, width: 200, height: 200}, surface);
 			imageShape.clip = {points: [350, 0, 450, 50, 380, 130, 300, 110]};
 			clipped.push(imageShape);
-			surface.createRect({x: 300, y: 0, width: 200, height: 200}).stroke = "#FF00FF";
+			new tu.Rect({x: 300, y: 0, width: 200, height: 200}, surface).stroke = "#FF00FF";
 
-			var g1 = surface.createGroup();
+			var g1 = new tu.Group(surface);
 			g1.transform = matrix.translate(50, 200);
 			g1.clip = {x: 20, y: 20, width: 90, height: 150};
-			var g = g1.createGroup();
-			g.createRect({width: 70, height: 100}).fill = "#8B8878";
-			g.createEllipse({cx: 50, cy: 90, rx: 40, ry: 20}).fill = "#CDB79E";
+			var g = new tu.Group(g1);
+			new tu.Rect({width: 70, height: 100}, g).fill = "#8B8878";
+			new tu.Ellipse({cx: 50, cy: 90, rx: 40, ry: 20}, g).fill = "#CDB79E";
 			g.clip = {x: 0, y: 60, width: 80, height: 30};
-			g.createRect(g.getBoundingBox()).stroke = "#CDB79E";
+			new tu.Rect(g.getBoundingBox(), g).stroke = "#CDB79E";
 			clipped.push(g);
 
-			g = g1.createGroup();
-			g.createRect({width: 70, height: 100}).fill = "#8B8878";
-			g.createEllipse({cx: 50, cy: 90, rx: 40, ry: 20}).fill = "#CDB79E";
+			g = new tu.Group(g1);
+			new tu.Rect({width: 70, height: 100}, g).fill = "#8B8878";
+			new tu.Ellipse({cx: 50, cy: 90, rx: 40, ry: 20}, g).fill = "#CDB79E";
 			g.clip = {x: 0, y: 60, width: 70, height: 50};
 			g.transform = matrix.translate(50, 50);
-			g.createRect(g.getBoundingBox()).stroke = "#CDB79E";
+			new tu.Rect(g.getBoundingBox(), g).stroke = "#CDB79E";
 			clipped.push(g);
-			rect = surface.createRect(g1.getBoundingBox());
+			rect = new tu.Rect(g1.getBoundingBox(), surface);
 			rect.stroke = "#8B8878";
 			rect.transform = matrix.translate(50, 200);
 
-			rect = surface.createRect({x: 50, y: 50, width: 100, height: 100});
+			rect = new tu.Rect({x: 50, y: 50, width: 100, height: 100}, surface);
 			rect.clip = {x: 50, y: 50, width: 50, height: 50};
 			rect.fill = "yellow";
 			rect.transform = matrix.scaleAt(2, 2, 50, 50);
 			clipped.push(rect);
-			g = surface.createGroup();
-			var gg = g.createGroup();
+			g = new tu.Group(surface);
+			var gg = new tu.Group(g);
 			gg.transform = matrix.scaleAt(2, 2, 50, 250);
 			gg.clip = {x: 100, y: 300, width: 50, height: 50};
-			gg.createRect({x: 50, y: 250, width: 100, height: 100}).fill = "red";
+			new tu.Rect({x: 50, y: 250, width: 100, height: 100}, gg).fill = "red";
 			clipped.push(gg);
-			rect = surface.createRect({x: 50, y: 350, width: 50, height: 50});
+			rect = new tu.Rect({x: 50, y: 350, width: 50, height: 50}, surface);
 			rect.clip = {x: 75, y: 375, width: 25, height: 25};
 			rect.fill = "green";
 			clipped.push(rect);

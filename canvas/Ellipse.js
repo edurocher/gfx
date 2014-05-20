@@ -1,5 +1,5 @@
 define([
-	"dcl/dcl", "./_base", "./Shape", "../shape/_EllipseBase", "../arc", "../matrix"
+	"dcl/dcl", "./_utils", "./Shape", "../shape/_EllipseBase", "../arc", "../matrix"
 ], function (dcl, canvas, CanvasShape, EllipseBase, ga, m) {
 
 	var mp = m.multiplyPoint;

@@ -1,5 +1,5 @@
 ﻿define([
-	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx"
+	"require", "intern!object", "intern/chai!assert", "../utils/testUtils"
 ], function (require, registerSuite, assert, tu) {
 
 	var surface;
@@ -13,8 +13,8 @@
 			tu.destroySurface(surface);
 		},
 		"surface clipping": function () {
-			surface.createRect({width: 200, height: 200}).stroke = "black";
-			surface.createRect({x: 150, y: 10, width: 300, height: 300}).fill = "red";
+			new tu.Rect({width: 200, height: 200}, surface).stroke = "black";
+			new tu.Rect({x: 150, y: 10, width: 300, height: 300}, surface).fill = "red";
 
 			var s = window.getComputedStyle(surface.rawNode);
 			assert.equal(s.width, "200px", "surface width");

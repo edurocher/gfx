@@ -1,5 +1,5 @@
 define([
-	"dojo/_base/lang", "dcl/dcl", "./_base", "./Shape", "../shape/_PathBase", "../arc"
+	"dojo/_base/lang", "dcl/dcl", "./_utils", "./Shape", "../shape/_PathBase", "../arc"
 ], function (lang, dcl, canvas, CanvasShape, PathBase, ga) {
 
 	var hasNativeDash = canvas.hasNativeDash;

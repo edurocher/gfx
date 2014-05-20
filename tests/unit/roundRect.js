@@ -1,6 +1,6 @@
 ﻿define([
-	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx", "gfx/matrix"
-], function (require, registerSuite, assert, tu, gfx, matrix) {
+	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/matrix"
+], function (require, registerSuite, assert, tu, matrix) {
 
 	var surface;
 
@@ -14,10 +14,10 @@
 		},
 		"roundrect": function () {
 			var rect;
-			rect = surface.createRect({x: 20, y: 100, width: 300, height: 200, r: 50});
+			rect = new tu.Rect({x: 20, y: 100, width: 300, height: 200, r: 50}, surface);
 			rect.fill = "red";
 			rect.stroke = "black";
-			rect = surface.createRect({x: 0, y: 100, width: 300, height: 200, r: 50});
+			rect = new tu.Rect({x: 0, y: 100, width: 300, height: 200, r: 50}, surface);
 			rect.fill = "red";
 			rect.stroke = "black";
 			rect.transform = matrix.translate(350, 0);

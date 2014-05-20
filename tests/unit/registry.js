@@ -1,6 +1,6 @@
 ﻿define([
-	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx", "gfx/registry"
-], function (require, registerSuite, assert, tu, gfx, registry) {
+	"require", "intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/registry"
+], function (require, registerSuite, assert, tu, registry) {
 
 	var surface;
 
@@ -69,7 +69,7 @@
 			[
 				"Group", "Rect", "Ellipse", "Circle", "Line", "Polyline", "Image", "Text", "Path", "TextPath"
 			].forEach(function (name) {
-					var s = surface["create" + name]();
+					var s = new (tu[name])(surface);
 					assert.isTrue(s.getUID() && s.getUID().length > 0,
 						"Checking automatic shape registration for " + name);
 					var o = registry.byId(s.getUID());
@@ -85,7 +85,7 @@
 			[
 				"Group", "Rect", "Ellipse", "Circle", "Line", "Polyline", "Image", "Text", "Path", "TextPath"
 			].forEach(function (name) {
-					var s = surface["create" + name]();
+					var s = new (tu[name])(surface);
 					var id = s.getUID();
 					assert.isTrue(dic[name] !== id, "Checking unicity.");
 				});

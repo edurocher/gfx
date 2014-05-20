@@ -1,6 +1,6 @@
 ﻿define([
-	"intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx", "gfx/svg"
-], function (registerSuite, assert, tu) {
+	"intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/svg/Path", "gfx/svg/TextPath"
+], function (registerSuite, assert, tu, Path, TextPath) {
 	var surface;
 	registerSuite({
 		name: "Text on path (SVG only)",
@@ -15,17 +15,17 @@
 
 			var CPD = 30;
 
-			var p = surface.createPath({}).moveTo(0, 100).setAbsoluteMode(false).curveTo(CPD, 0, 100 - CPD, 300, 100,
+			var p = new Path({}, surface).moveTo(0, 100).setAbsoluteMode(false).curveTo(CPD, 0, 100 - CPD, 300, 100,
 					300).curveTo(CPD, 0, 100 - CPD, -300, 100, -300).curveTo(CPD, 0, 100 - CPD, 300, 100,
 					300).curveTo(CPD, 0, 100 - CPD, -300, 100, -300).curveTo(CPD, 0, 100 - CPD, 300, 100, 300);
 			p.stroke = "green";
-			var t = surface.createTextPath({
+			var t = new TextPath({
 				text: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Praesent erat. " +
 					"In malesuada ultricies velit. Vestibulum tempor odio vitae diam. " +
 					"Morbi arcu lectus, laoreet eget, nonummy at, elementum a, quam.",
 				align: "middle"
 				//, rotated: true
-			}).moveTo(0, 100).setAbsoluteMode(false).curveTo(CPD, 0, 100 - CPD, 300, 100, 300).curveTo(CPD, 0,
+			}, surface).moveTo(0, 100).setAbsoluteMode(false).curveTo(CPD, 0, 100 - CPD, 300, 100, 300).curveTo(CPD, 0,
 					100 - CPD, -300, 100, -300).curveTo(CPD, 0, 100 - CPD, 300, 100, 300).curveTo(CPD, 0, 100 - CPD,
 					-300, 100, -300).curveTo(CPD, 0, 100 - CPD, 300, 100, 300);
 			t.font = {family: "times", size: "12pt"};

@@ -1,7 +1,7 @@
 define([
-	"dcl/dcl", "./Shape", "../shape/_GroupBase", "./Container", "./Creator"
-], function (dcl, CanvasShape, GroupBase, CanvasContainer, CanvasCreator) {
-	return dcl([CanvasShape, GroupBase, CanvasContainer, CanvasCreator], {
+	"dcl/dcl", "./Shape", "../shape/_GroupBase", "./Container"
+], function (dcl, CanvasShape, GroupBase, CanvasContainer) {
+	return dcl([CanvasShape, GroupBase, CanvasContainer], {
 		// summary:
 		//		a group shape (Canvas), which can be used
 		//		to logically group shapes (e.g, to propagate matricies)

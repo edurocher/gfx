@@ -1,24 +1,10 @@
 define([
-	"dojo/_base/kernel", "dojo/_base/lang", "./_base", "dojo/_base/window", "dojo/Deferred", "dojo/_base/sniff",
+	"dojo/_base/kernel", "dojo/_base/lang", "./_utils", "dojo/_base/window", "dojo/Deferred", "dojo/_base/sniff",
 	"require", "dojo/_base/config", "dcl/dcl"
 ], function (kernel, lang, g, win, Deferred, has, require, config, dcl) {
-	var gu = g.utils = {};
+	var gu = {};
 
-	var classesRequired, Surface, Group;
-
-	function ensureClassesRequired() {
-		if (!classesRequired) {
-			try {
-				Surface = require("./shape/_SurfaceBase");
-			} catch (err) {
-			}
-			try {
-				Group = require("./shape/_GroupBase");
-			} catch (err) {
-			}
-			classesRequired = true;
-		}
-	}
+	var cc = {}; // class cache for createShape.
 
 	dcl.mix(gu, {
 		forEach: function (/*gfx/shape.Surface|gfx/shape.Shape*/ object, /*Function|String|Array*/ f, /*Object?*/o
@@ -35,11 +21,9 @@ define([
 			// o:
 			//		The scope.
 
-			ensureClassesRequired();
-
 			o = o || kernel.global;
 			f.call(o, object);
-			if (dcl.isInstanceOf(object, Surface) || dcl.isInstanceOf(object, Group)) {
+			if ("children" in object) {
 				object.children.forEach(function (shape) {
 					gu.forEach(shape, f, o);
 				});
@@ -54,10 +38,8 @@ define([
 
 			/* jshint maxcomplexity:12 */
 
-			ensureClassesRequired();
-
-			var t = {}, v, isSurface = dcl.isInstanceOf(object, Surface);
-			if (isSurface || dcl.isInstanceOf(object, Group)) {
+			var t = {}, v, isSurface = object._isSurface;
+			if ("children" in object) {
 				t.children = object.children.map(gu.serialize);
 				if (isSurface) {
 					return t.children;	// Array
@@ -65,25 +47,25 @@ define([
 			} else {
 				t.shape = object.shape;
 			}
-			if (object.getTransform) {
+			if ("transform" in object) {
 				v = object.transform;
 				if (v) {
 					t.transform = v;
 				}
 			}
-			if (object.getStroke) {
+			if ("stroke" in object) {
 				v = object.stroke;
 				if (v) {
 					t.stroke = v;
 				}
 			}
-			if (object.getFill) {
+			if ("fill" in object) {
 				v = object.fill;
 				if (v) {
 					t.fill = v;
 				}
 			}
-			if (object.getFont) {
+			if ("font" in object) {
 				v = object.font;
 				if (v) {
 					t.font = v;
@@ -105,6 +87,31 @@ define([
 			return JSON.stringify(gu.serialize(object), prettyPrint ? "\t" : null);	// String
 		},
 
+		createShape: function (shape, parent) {
+			// summary:
+			//		Creates a shape given a shape description. The shape description is assumed to
+			//		contain a "type" property, for example, type: "rect" for a gfx/Rect shape, or "my/CustomShape"
+			//		for a custom shape class.
+			//		The createShape method will use an immediate require call (for example require("gfx/Rect"))
+			//		to fetch the shape class, so the AMD module containing the shape class is assumed to be already
+			//		loaded by the application, otherwise an error is thrown.
+			// parent: Object
+			//		The parent shape (a gfx/Surface or a gfx/Group). The new shape will be added to this container.
+
+			var m = shape.type;
+
+			if (!/\//.test(m)) {
+				m = "./" + parent.renderer + "/" + shape.type.replace(/^(.)/, function (c) {
+					return c.toUpperCase();
+				});
+			}
+			var C = cc[m];
+			if (!C) {
+				C = cc[m] = require(m);
+			}
+			return new C(shape, parent);
+		},
+
 		deserialize: function (parent, object) {
 			// summary:
 			//		Takes a surface or a shape and populates it with an object produced by serialize().
@@ -116,7 +123,7 @@ define([
 			if (object instanceof Array) {
 				return object.map(lang.hitch(null, gu.deserialize, parent));	// Array
 			}
-			var shape = ("shape" in object) ? parent.createShape(object.shape) : parent.createGroup();
+			var shape = gu.createShape(object.shape || {type: "group"}, parent);
 			if ("transform" in object) {
 				shape.transform = object.transform;
 			}
@@ -164,7 +171,7 @@ define([
 			//return a deferred that will be called when content has serialized.
 			var deferred = new Deferred();
 
-			if (g.renderer === "svg") {
+			if (surface.renderer === "svg") {
 				//If we're already in SVG mode, this is easy and quick.
 				try {
 					var svg = gu._cleanSvg(gu._innerXML(surface.rawNode));

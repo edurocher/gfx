@@ -1,16 +1,17 @@
 define([
-	"dcl/dcl", "../_base", "./_base", "./Shape", "../shape/_TextBase", "dojo/has", "dojo/has!dojo-bidi?./bidi/Text"
-], function (dcl, g, canvas, CanvasShape, TextBase, has, CanvasBidiText) {
+	"dcl/dcl", "../_utils", "./_utils", "./Shape", "../shape/_TextBase", "../shape/_FontBase", "dojo/has", "dojo/has!dojo-bidi?./bidi/Text"
+], function (dcl, g, canvas, CanvasShape, TextBase, FontBase, has, CanvasBidiText) {
 
 	var hasFillText = canvas.hasFillText;
 
 	var Text = dcl([CanvasShape, TextBase], {
+
 		_setFont: function () {
 			if (this.parent) {
 				this.parent._makeDirty();
 			}
 			if (this.font) {
-				this.canvasFont = g.makeFontString(this.font);
+				this.canvasFont = FontBase.makeFontString(this.font);
 			} else {
 				delete this.canvasFont;
 			}

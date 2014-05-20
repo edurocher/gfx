@@ -1,6 +1,6 @@
 define([
-	"../_base", "dcl/dcl", "./_ShapeBase", "dojo/has", "dojo/has!dojo-bidi?./bidi/_Text"
-], function (g, dcl, Shape, has, BidiText) {
+	"../_utils", "dcl/dcl", "./_ShapeBase", "./_FontBase", "dojo/has", "dojo/has!dojo-bidi?./bidi/_Text"
+], function (g, dcl, Shape, Font, has, BidiText) {
 	var defaultShape = {
 		// summary:
 		//		Defines the default Text prototype.
@@ -37,36 +37,45 @@ define([
 		//		Whether kerning is used on the text, boolean default value true.
 		kerning: true
 	};
-	var Text = dcl(Shape, {
+	var Text = dcl([Shape, Font], {
 		// summary:
 		//		a generic text (do not instantiate it directly)
 		shape: defaultShape,
 
-		// font: Object
-		//		A font object (see gfx.defaultFont) or a font string
-		font: null,
-
-		_setFontAttr: function (newFont) {
+		_computeTextBoundingBox: function () {
 			// summary:
-			//		sets a font for text
-			// newFont: Object
-			//		a font object (see gfx.defaultFont) or a font string
-			this._set("font",
-				typeof newFont === "string" ? g.splitFontString(newFont) : g.makeParameters(g.defaultFont, newFont));
-			this._setFont();
+			//		Compute the bbox of the given shape.Text instance. Note that this method returns an
+			//		approximation of the bbox, and should be used when the underlying renderer cannot provide precise
+			//		metrics.
+			if (!g._isRendered(this)) {
+				return {x: 0, y: 0, width: 0, height: 0};
+			}
+			var loc, textShape = this.shape, font = this.font ||
+				Font.defaultFont, w = this.getTextWidth(), h = g._normalizedLength(font.size);
+			loc = g._computeTextLocation(textShape, w, h, true);
+			return {
+				x: loc.x,
+				y: loc.y,
+				width: w,
+				height: h
+			};
 		},
+
 		getBoundingBox: function () {
 			var bbox = null, s = this._get("shape");
 			if (s.text) {
-				bbox = g._computeTextBoundingBox(this);
+				bbox = this._computeTextBoundingBox(this);
 			}
 			return bbox;
 		}
 	});
 	if (has("dojo-bidi")) {
 		Text = dcl([Text, BidiText], {});
-		defaultShape.textDir = "";
+		dcl.mix(defaultShape, {
+			// textDir: String
+			//		The text direction.
+			textDir: ""
+		});
 	}
-	Text.defaultShape = defaultShape;
 	return Text;
 });

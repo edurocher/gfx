@@ -1,10 +1,15 @@
 define([
-	"dojo/_base/lang", "dcl/dcl", "dojo/dom", "dojo/dom-geometry", "../_base", "../shape/_SurfaceBase", "./Container",
-	"./Creator", "dojo/has", "dojo/has!dojo-bidi?./bidi/Surface"
-], function (lang, dcl, dom, domGeom, g, SurfaceBase, Container, Creator, has, BidiSurface) {
-	var Surface = dcl([SurfaceBase, Container, Creator], {
+	"dojo/_base/lang", "dcl/dcl", "dojo/dom", "dojo/dom-geometry", "../_utils", "../shape/_SurfaceBase", "./Container",
+	"dojo/has", "dojo/has!dojo-bidi?./bidi/Surface"
+], function (lang, dcl, dom, domGeom, g, SurfaceBase, Container, has, BidiSurface) {
+	var Surface = dcl([SurfaceBase, Container], {
 		// summary:
 		//		a surface object to be used for drawings (Canvas)
+
+		// renderer: String
+		//		The underlying renderer used by this surface: "canvas".
+		renderer: "canvas",
+
 		constructor: function (parentNode, width, height) {
 			// summary:
 			//		creates a surface (Canvas)
@@ -29,8 +34,8 @@ define([
 
 			var p = dom.byId(parentNode), c = p.ownerDocument.createElement("canvas");
 
-			c.width = g.normalizedLength(width);	// in pixels
-			c.height = g.normalizedLength(height);	// in pixels
+			c.width = g._normalizedLength(width);	// in pixels
+			c.height = g._normalizedLength(height);	// in pixels
 
 			p.appendChild(c);
 			this.rawNode = c;
@@ -55,8 +60,8 @@ define([
 			//		width of surface, e.g., "100px"
 			// height: String
 			//		height of surface, e.g., "100px"
-			this.width = g.normalizedLength(width);	// in pixels
-			this.height = g.normalizedLength(height);	// in pixels
+			this.width = g._normalizedLength(width);	// in pixels
+			this.height = g._normalizedLength(height);	// in pixels
 			if (!this.rawNode) {
 				return this;
 			}
@@ -160,6 +165,25 @@ define([
 		disconnect: function () {
 		},
 		on: function () {
+		},
+
+		getImageData: function (rect) {
+			// summary:
+			//		Returns the canvas pixel buffer.
+			// rect: gfx.Rectangle
+			//		The canvas area.
+
+			// flush pending renders queue, if any
+			if ("pendingRender" in this) {
+				this._render(true); // force render even if there're pendingImages
+			}
+			return this.rawNode.getContext("2d").getImageData(rect.x, rect.y, rect.width, rect.height);
+		},
+
+		getContext: function () {
+			// summary:
+			//		Returns the surface CanvasRenderingContext2D.
+			return this.rawNode.getContext("2d");
 		}
 	});
 	return has("dojo-bidi") ? dcl([Surface, BidiSurface], {}) : Surface;

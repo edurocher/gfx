@@ -1,5 +1,5 @@
 ﻿define([
-	"intern!object", "intern/chai!assert", "../utils/testUtils", "gfx/gfx"
+	"intern!object", "intern/chai!assert", "../utils/testUtils"
 ], function (registerSuite, assert, tu) {
 	var surface;
 	tu.registerSuite({
@@ -12,40 +12,40 @@
 		},
 		"drashed stroke": function () {
 			var s;
-			s = surface.createText({x: 250, y: 50, text: tu.renderer});
+			s = new tu.Text({x: 250, y: 50, text: tu.renderer}, surface);
 			s.fill = "black";
 			s.font = {family: "sans-serif", size: "40pt"};
 
-			s = surface.createCircle({cx: 130, cy: 200, r: 70});
+			s = new tu.Circle({cx: 130, cy: 200, r: 70}, surface);
 			s.stroke = {width: 2, style: "dashdot", color: "blue"};
 			s.fill = "rgba(162,205,90,.3";
-			s = surface.createLine({x1: 200, y1: 200, x2: 400, y2: 300});
+			s = new tu.Line({x1: 200, y1: 200, x2: 400, y2: 300}, surface);
 			s.stroke = {width: 2, style: "dashdot", color: "black"};
 
-			s = surface.createRect({x: 200, y: 200});
+			s = new tu.Rect({x: 200, y: 200}, surface);
 			s.fill = "rgba(162,205,90,.3)";
 			s.stroke = {width: 6, style: "longdash", color: "black"};
-			s = surface.createRect({x: 300, y: 50, r: 10});
+			s = new tu.Rect({x: 300, y: 50, r: 10}, surface);
 			s.stroke = {width: 6, style: "dashdot", color: "red"};
 			s.fill = "rgba(162,205,90,.3";
-			s = surface.createEllipse({cx: 300, cy: 400, rx: 120, ry: 80});
+			s = new tu.Ellipse({cx: 300, cy: 400, rx: 120, ry: 80}, surface);
 			s.stroke = {width: 2, style: "dashdot", color: "black"};
 			s.fill = "rgba(162,205,90,.3";
 
 
 			// MoveTo + lineTo combine in one M xx,xx,...,xxx [Absolute]
-			s = surface.createPath();
+			s = new tu.Path(surface);
 			s.stroke = {color: "rgb(110,139,61)", width: 4, style: "longdash"};
 			s.fill = "rgba(162,205,90,.3)";
 			s.shape = {path: "M 10.499686,210,100.174931,378.56990,40,290Z"};
 			// MoveTo + lineTo combine + lineTo  [Relative]
-			s = surface.createPath();
+			s = new tu.Path(surface);
 			s.stroke = {color: "rgb(110,139,61)", width: 4, style: "longdash"};
 			s.fill = "rgba(162,205,90,.3)";
 			s.shape = {path: "m 300.499686,210,130,50,40,90 l 90,-150 Z"};
 
 			//PI
-			s = surface.createPath();
+			s = new tu.Path(surface);
 			s.stroke = {color: "rgb(110,139,61)", width: 4, style: "shortdashdot"};
 			s.fill = "rgba(162,205,90,.3)";
 			s.shape = {path: "M 10.499686,177.03840 L 31.174931,178.56990 C 52.615925,154.32116 61.039171,82.595924 " +
@@ -58,11 +58,11 @@
 				"C 378.82535,468.78908 441.61683,266.63113 442.38258,97.400421 L 577.92030,98.166171 " +
 				"L 577.15455,11.636437 C 13.807491,8.9075799 85.312284,-2.1366151 10.499686,177.03840 z"};
 
-			s = surface.createPath();
+			s = new tu.Path(surface);
 			s.stroke = {color: "black", style: "longdash", width: 3};
 			s.fill = "rgba(162,205,90,.3)";
 			s.shape = {path: "M400 100 500 100 500 200Q500 250 425 175T400 100z"};
-			s = surface.createPolyline({points: [50, 50, 80, 130, 160, 90, 110, 270]});
+			s = new tu.Polyline({points: [50, 50, 80, 130, 160, 90, 110, 270]}, surface);
 			s.stroke = {width: 4, style: "dashdot", color: "black"};
 
 			/* jshint maxlen:100000, quotmark:single */

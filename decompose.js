@@ -1,4 +1,4 @@
-define(["dcl/dcl", "./_base", "./matrix"], function (dcl, g, m) {
+define(["dcl/dcl", "./_utils", "./matrix"], function (dcl, g, m) {
 	function eq(/* Number */ a, /* Number */ b) {
 		// summary:
 		//		compare two FP numbers for equality
