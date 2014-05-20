@@ -9,12 +9,12 @@
         var gfxTest = {};
 
         require([
-            "dojo/ready", "gfx/gfx", "gfx/Moveable", "dpointer/events"
-        ], function (ready, gfx, Moveable, pointerEvents) {
+            "dojo/ready", "gfx/Surface", "gfx/Circle", "gfx/Moveable", "dpointer/events"
+        ], function (ready, Surface, Circle, Moveable, pointerEvents) {
 
             function makeShapes() {
-                var surface = gfxTest.surface = gfx.createSurface("surfaceDiv", 300, 400);
-                var circle = gfxTest.circle = surface.createCircle({cx:50, cy:50, r:50});
+                var surface = gfxTest.surface = new Surface("surfaceDiv", 300, 400);
+                var circle = gfxTest.circle = new Circle({cx:50, cy:50, r:50}, surface);
                 circle.fill = "red";
                 circle.stroke = "black"
                 circle.rawNode.id = "circle";

@@ -30,8 +30,8 @@
         };
 
         require([
-            "gfx/gfx", "dojo/touch", "dojo/dom", "dojo/on", "dojo/sniff", "dojo/ready"
-        ], function (gfx, touch, dom, on, has, ready) {
+            "gfx/Surface", "gfx/Group", "gfx/Rect", "dojo/touch", "dojo/dom", "dojo/on", "dojo/sniff", "dojo/ready"
+        ], function (Surface, Group, Rect, touch, dom, on, has, ready) {
 
             function log(msg) {
                 var elt = document.createTextNode(msg);
@@ -56,15 +56,15 @@
             }
 
             function makeShapes(surface) {
-                var g = gfxTest.g = surface.createGroup();
+                var g = gfxTest.g = new Group(surface);
                 g.id = g.rawNode.id = "g";
-                var rect1 = gfxTest.rect1 = g.createRect({x: 50, y: 10, width: 180, height: 170});
+                var rect1 = gfxTest.rect1 = new Rect({x: 50, y: 10, width: 180, height: 170}, g);
                 rect1.fill = 'red';
                 rect1.id = rect1.rawNode.id = 'rect1';
-                var rect2 = gfxTest.rect2 = g.createRect({x: 10, y: 150, width: 110, height: 175});
+                var rect2 = gfxTest.rect2 = new Rect({x: 10, y: 150, width: 110, height: 175}, g);
                 rect2.fill = 'blue';
                 rect2.id = rect2.rawNode.id = 'rect2';
-                var rect3 = gfxTest.rect3 = g.createRect({x: 50, y: 360, width: 50, height: 50});
+                var rect3 = gfxTest.rect3 = new Rect({x: 50, y: 360, width: 50, height: 50}, g);
                 rect3.fill = 'green';
                 rect3.id = rect3.rawNode.id = 'rect3';
 
@@ -77,10 +77,10 @@
             }
 
             function buildScenes() {
-                var surface = gfxTest.surface = gfx.createSurface("surfaceDiv", 300, 400);
+                var surface = gfxTest.surface = new Surface("surfaceDiv", 300, 400);
                 surface.id = surface.rawNode.id = "surface";
                 makeShapes(surface);
-                log("renderer:" + gfx.renderer);
+                log("renderer:" + surface.renderer);
             }
 
             ready(function () {
