@@ -1,9 +1,10 @@
 define(["dcl/dcl"], function (dcl) {
 	return dcl(null, {
-		constructor: function (textDir) {
-			if (textDir) {
-				this.textDir = textDir;
-			}
+
+		shape: { textDir: "" },
+
+		constructor: function () {
+			this.textDir =  this._get("shape").textDir || this._get("textDir");
 		},
 
 		_setParent: dcl.superCall(function (sup) {

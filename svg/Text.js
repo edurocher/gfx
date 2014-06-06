@@ -1,6 +1,6 @@
 define([
 	"dcl/dcl", "dojo/_base/sniff", "../_utils", "./_utils", "./Shape", "../shape/_TextBase", "./Font",
-	"dojo/has!dojo-bidi?./bidi/Text"
+	"dojo/has!bidi?./bidi/Text"
 ], function (dcl, has, g, svg, SvgShape, TextBase, Font, SvgBidiText) {
 	var android = has("android"), textRenderingFix = has("chrome") || (android && android >= 4) ? "auto" :
 		"optimizeLegibility";// #16099, #16461
@@ -66,7 +66,7 @@ define([
 			return bbox;
 		}
 	});
-	if (has("dojo-bidi")) {
+	if (has("bidi")) {
 		Text = dcl([Text, SvgBidiText], {});
 	}
 

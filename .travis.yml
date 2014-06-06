@@ -11,4 +11,6 @@ install:
    - npm install
    - bower install
 script:
-  - grunt jshint test:remote
+  - grunt jshint
+  - grunt test:remote
+  - grunt test:bidi.remote

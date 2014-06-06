@@ -1,5 +1,5 @@
 define([
-	"dcl/dcl", "../_utils", "./_utils", "./Shape", "../shape/_TextBase", "../shape/_FontBase", "dojo/has", "dojo/has!dojo-bidi?./bidi/Text"
+	"dcl/dcl", "../_utils", "./_utils", "./Shape", "../shape/_TextBase", "../shape/_FontBase", "dojo/has", "dojo/has!bidi?./bidi/Text"
 ], function (dcl, g, canvas, CanvasShape, TextBase, FontBase, has, CanvasBidiText) {
 
 	var hasFillText = canvas.hasFillText;
@@ -92,5 +92,5 @@ define([
 			}
 		}
 	});
-	return has("dojo-bidi") ? dcl([Text, CanvasBidiText], {}) : Text;
+	return has("bidi") ? dcl([Text, CanvasBidiText], {}) : Text;
 });

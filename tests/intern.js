@@ -1,7 +1,7 @@
-// run grunt --help for help on how to run
-// Learn more about configuring this file at <https://github.com/theintern/intern/wiki/Configuring-Intern>.
-// These default settings work OK for most people. The options that *must* be changed below are the
-// packages, suites, excludeInstrumentation, and (if you want functional tests) functionalSuites.
+// Test file to run GFX tests.
+// This configuration file is used as a base module for other intern configs (intern.*.js),
+// and it can also be run directly to run all the GFX tests on SauceLabs using grunt test:remote
+
 define({
 	// The port on which the instrumenting proxy will listen
 	proxyPort: 9000,

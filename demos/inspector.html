@@ -21,8 +21,8 @@
     <script type="text/javascript">
         require([
             "dojo/ready", "dojo/dom", "dojo/on", "dojo/topic", "dojo/dom-geometry", "dojo/_base/event",
-            "dojo/request/xhr", "gfx/all", "gfx/Moveable", "gfx/utils", "gfx/matrix"
-        ], function (ready, dom, on, topic, domGeometry, event, xhr, gfx, Moveable, gfxUtils, matrix) {
+            "dojo/request/xhr", "gfx/Surface", "gfx/Group", "gfx/Moveable", "gfx/utils", "gfx/matrix", "gfx/all"
+        ], function (ready, dom, on, topic, domGeometry, event, xhr, Surface, Group, Moveable, gfxUtils, matrix) {
             surface = null;
             container_pos = null;
             mover = null;
@@ -30,7 +30,7 @@
             init = function () {
                 // initialize graphics
                 var container = dom.byId("gfx");
-                surface = new gfx.Surface(container, 500, 500);
+                surface = new Surface(container, 500, 500);
                 container_pos = domGeometry.position(container, true);
                 // wire UI
                 on(dom.byId("load"), "click", onLoad);
@@ -113,7 +113,7 @@
                         continue;
                     }
                     var object = names[Number(opt.value)];
-                    var group = new gfx.Group(surface);
+                    var group = new Group(surface);
                     gfxUtils.deserialize(group, object);
                     new Moveable(group); // make it moveable as whole
                 }

@@ -23,7 +23,7 @@ define([
 
 			o = o || kernel.global;
 			f.call(o, object);
-			if ("children" in object) {
+			if ("children" in object && object.children) {
 				object.children.forEach(function (shape) {
 					gu.forEach(shape, f, o);
 				});

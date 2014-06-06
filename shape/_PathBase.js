@@ -226,11 +226,12 @@ define([
 			for (i = 0; i < l; ++i) {
 				path.push(this._formatNumber(n[i], true));
 			}
-			if (typeof this.shape.path === "string") {
-				this.shape.path += path.join("");
+			var s = this._get("shape");
+			if (typeof s.path === "string") {
+				s.path += path.join("");
 			} else {
-				for (i = 0, l = path.length; i < l; ++i) {
-					this.shape.path.push(path[i]);
+				for (i = 0 , l = path.length; i < l; ++i) {
+					s.path.push(path[i]);
 				}
 			}
 		},
@@ -404,12 +405,13 @@ define([
 
 		_confirmSegmented: function () {
 			if (!this.segmented) {
-				var path = this.shape.path;
+				var s = this._get("shape");
+				var path = s.path;
 				// switch to non-updating version of path building
-				this.shape.path = [];
+				s.path = [];
 				this._setPath(path);
 				// switch back to the string path
-				this.shape.path = this.shape.path.join("");
+				s.path = s.path.join("");
 				// become segmented
 				this.segmented = true;
 			}

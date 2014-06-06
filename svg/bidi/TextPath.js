@@ -10,7 +10,7 @@ define(["dcl/dcl", "dojo/has", "../../_bidi"], function (dcl, has, bidi) {
 			}
 		},
 
-		_setTextAttr: dcl.advise({
+		_setShapeAttr: dcl.advise({
 			around: function (sup) {
 				return function (value) {
 					value = bidi.bidiPreprocess.call(this, value);
@@ -19,10 +19,10 @@ define(["dcl/dcl", "dojo/has", "../../_bidi"], function (dcl, has, bidi) {
 			}
 		}),
 
-		_getTextAttr: dcl.advise({
+		_getShapeAttr: dcl.advise({
 			around: function (sup) {
 				return function () {
-					var value = sup ? sup.call(this) : this._get("text");
+					var value = sup ? sup.call(this) : this._get("shape");
 					return bidi.restoreText.call(this, value);
 				};
 			}

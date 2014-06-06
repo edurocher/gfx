@@ -29,7 +29,21 @@ module.exports = function (grunt) {
 					config: "tests/intern",
 					reporters: ["runner"]
 				}
-			}
+			},
+			"bidi.local": {
+				options: {
+					runType: "runner",
+					config: "tests/intern.bidi.local",
+					reporters: ["runner"]
+				}
+			},
+			"bidi.remote": {
+				options: {
+					runType: "runner",
+					config: "tests/intern.bidi",
+					reporters: ["runner"]
+				}
+			},
 		}
 	});
 	// Load plugins
@@ -40,11 +54,12 @@ module.exports = function (grunt) {
 	// then add on any other flags afterwards e.g. console, lcovhtml
 	var testTaskDescription = "Run this task instead of the intern task directly! \n" +
 		"Always specify the test target e.g. \n" + "grunt test:local\n" + "grunt test:remote\n\n" +
+		"grunt test:bidi.local\n" + "grunt test:bidi.remote\n\n" +
 		"Add any optional reporters via a flag e.g. \n" + "grunt test:local:console\n" + "grunt test:local:lcovhtml\n" +
 		"grunt test:local:console:lcovhtml";
 	grunt.registerTask("test", testTaskDescription, function (target) {
 		if (!target) {
-			grunt.warn("Always specify a target, e.g. grunt test:remote, grunt test:remote");
+			grunt.warn("Always specify a target, e.g. grunt test:local, grunt test:remote");
 		}
 		function addReporter(reporter) {
 			var property = "intern." + target + ".options.reporters", value = grunt.config.get(property);

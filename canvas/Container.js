@@ -38,12 +38,14 @@ define([
 				shape.surface = this.surface;
 				this._makeDirty();
 				sup.apply(this, arguments);
+				return this;
 			};
 		}),
 		remove: dcl.superCall(function (sup) {
 			return function (/*===== shape, silently =====*/) {
 				this._makeDirty();
 				sup.apply(this, arguments);
+				return this;
 			};
 		}),
 		clear: dcl.superCall(function (sup) {

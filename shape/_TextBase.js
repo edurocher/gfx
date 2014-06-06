@@ -1,5 +1,5 @@
 define([
-	"../_utils", "dcl/dcl", "./_ShapeBase", "./_FontBase", "dojo/has", "dojo/has!dojo-bidi?./bidi/_Text"
+	"../_utils", "dcl/dcl", "./_ShapeBase", "./_FontBase", "dojo/has", "dojo/has!bidi?./bidi/_Text"
 ], function (g, dcl, Shape, Font, has, BidiText) {
 	var defaultShape = {
 		// summary:
@@ -69,7 +69,7 @@ define([
 			return bbox;
 		}
 	});
-	if (has("dojo-bidi")) {
+	if (has("bidi")) {
 		Text = dcl([Text, BidiText], {});
 		dcl.mix(defaultShape, {
 			// textDir: String

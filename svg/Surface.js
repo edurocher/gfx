@@ -1,6 +1,6 @@
 define([
 	"require", "dcl/dcl", "dojo/dom", "../_utils", "./_utils", "../shape/_SurfaceBase", "./Container",
-	"dojo/has", "dojo/has!dojo-bidi?./bidi/Surface"
+	"dojo/has", "dojo/has!bidi?./bidi/Surface"
 ], function (require, dcl, dom, g, svg, SurfaceBase, Container, has, BidiSurface) {
 
 	var cc = {};
@@ -110,6 +110,7 @@ define([
 				} else {
 					sup.apply(this, arguments);
 				}
+				return this;
 			};
 		}),
 		remove: dcl.superCall(function (sup) {
@@ -120,8 +121,9 @@ define([
 				} else {
 					sup.apply(this, arguments);
 				}
+				return this;
 			};
 		}),
 	});
-	return has("dojo-bidi") ? dcl([Surface, BidiSurface], {}) : Surface;
+	return has("bidi") ? dcl([Surface, BidiSurface], {}) : Surface;
 });

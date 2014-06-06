@@ -1,4 +1,6 @@
-// run grunt --help for help on how to run
+// Test file to run GFX tests on a local Selenium server
+// Run using grunt test:local
+
 define([
 	"./intern"
 ], function (intern) {

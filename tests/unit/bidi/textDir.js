@@ -1,6 +1,6 @@
 ﻿define([
-	"intern!object", "intern/chai!assert", "../../utils/testUtils", "gfx/matrix"
-], function (registerSuite, assert, tu, m) {
+	"intern!object", "intern/chai!assert", "../../utils/testUtils"
+], function (registerSuite, assert, tu) {
 
 	var CPD = 30, tp1, tp2, tp3, tp4, tp5, tp6, t1, t2, t3, t4, t5, t6;
 	var g1 = null, g2 = null, g3, g4;
@@ -8,8 +8,8 @@
 	var surfaceLTR = null, surfaceRTL = null, surfaceAUTO = null;
 
 	function placeAnchor(surface, x, y) {
-		new tu.Line({x1: x - 2, y1: y, x2: x + 2, y2: y}, surface);
-		new tu.Line({x1: x, y1: y - 2, x2: x, y2: y + 2}, surface);
+		surface.add(new tu.Line({x1: x - 2, y1: y, x2: x + 2, y2: y}));
+		surface.add(new tu.Line({x1: x, y1: y - 2, x2: x, y2: y + 2}));
 	}
 
 	function makeText(surface, text, font, fill, stroke) {
@@ -27,31 +27,25 @@
 		return t;
 	}
 
-	function createDiv() {
-		var dn = document.createElement("div");
-		document.body.appendChild(dn);
-		return dn;
-	}
-
 	function makeShapes() {
-		surfaceLTR = gfx.createSurface(createDiv(), 500, 170, "ltr");
+		surfaceLTR = tu.createSurface(500, 170, null, null, null, "ltr");
 		console.debug("surfaceLTR created");
 		new tu.Path({}, surfaceLTR).moveTo(0, 15).setAbsoluteMode(false).curveTo(CPD, 0, 0, 0, 50, 0);
 
 		console.debug("p created");
-		tp1 = surfaceLTR.createTextPath({
+		tp1 = new tu.TextPath({
 			text: "\u05d4\u05ea\u05d7\u05dc\u05d4 end. ",
 			align: "start"
-		}).moveTo(0, 15).setAbsoluteMode(false).curveTo(CPD, 0, 0, 0, 100, 0);
+		}, surfaceLTR).moveTo(0, 15).setAbsoluteMode(false).curveTo(CPD, 0, 0, 0, 100, 0);
 		tp1.font = {family: "times", size: "12pt"};
 		tp1.fill = "blue";
 
 		console.debug("tp1 created");
-		tp2 = surfaceLTR.createTextPath({
+		tp2 = new tu.TextPath({
 			text: "Beginning \u05e1\u05d5\u05e3.",
 			align: "start"
 
-		}).moveTo(0, 50).setAbsoluteMode(false).curveTo(CPD, 0, 0, 0, 100, 0);
+		}, surfaceLTR).moveTo(0, 50).setAbsoluteMode(false).curveTo(CPD, 0, 0, 0, 100, 0);
 		tp2.font = {family: "times", size: "12pt"};
 		tp2.fill = "blue";
 
@@ -61,22 +55,20 @@
 		//		surfaceLTR.textDir = "ltr";
 		t1 = makeText(g1, {id: "t1", x: 0, y: 100, text: "1.) \u05d4\u05ea\u05d7\u05dc\u05d4 end!"},
 			{family: "Times", size: "18pt"}, "black", "blue");
-		t1.transform = m.rotategAt(0, 250, 150);
 
 		t2 = makeText(surfaceLTR, {x: 0, y: 140, text: "1.) Beginning \u05e1\u05d5\u05e3!"},
 			{family: "Times", size: "18pt"}, "black", "blue");
-		t2.transform = m.rotategAt(0, 250, 100);
 
-		surfaceRTL = gfx.createSurface(createDiv(), 500, 170);
+		surfaceRTL = tu.createSurface(500, 170);
 		console.debug("surfaceRTL created");
 		new tu.Path({}, surfaceRTL).moveTo(0, 15).setAbsoluteMode(false).curveTo(CPD, 0, 0, 0, 100, 0);
 
 		console.debug("p2 created");
-		tp3 = surfaceRTL.createTextPath({
+		tp3 = new tu.TextPath({
 			text: "\u05d4\u05ea\u05d7\u05dc\u05d4 end. ",
 			align: "start"
 			//, rotated: true
-		}).moveTo(0, 15).setAbsoluteMode(false).curveTo(CPD, 0, 100 - CPD, 0, 100, 0);
+		}, surfaceRTL).moveTo(0, 15).setAbsoluteMode(false).curveTo(CPD, 0, 100 - CPD, 0, 100, 0);
 		tp3.font = {family: "times", size: "12pt"};
 		tp3.fill = "red";
 
@@ -84,16 +76,16 @@
 		g2.add(tp3);
 		g2.textDir = "ltr";
 
-		g3 = new tu.Group("rtl", g2);
+		g3 = new tu.Group({ textDir: "rtl"}, g2);
 
-		g4 = new tu.Group("auto", surfaceRTL);
+		g4 = new tu.Group({textDir: "auto"}, surfaceRTL);
 		console.debug("tp3 created");
-		tp4 = surfaceRTL.createTextPath({
+		tp4 = new tu.TextPath({
 			text: "Beginning \u05e1\u05d5\u05e3.",
 			align: "start"
 
 			//, rotated: true
-		})//.setShape(p.shape)
+		}, surfaceRTL)//.setShape(p.shape)
 			.moveTo(0, 50).setAbsoluteMode(false).curveTo(CPD, 0, 100 - CPD, 0, 100, 0);
 		tp4.font = {family: "times", size: "12pt"};
 		tp4.fill = "red";
@@ -102,36 +94,34 @@
 
 		t3 = makeText(g3, {id: "t1", x: 0, y: 100, text: "1.) \u05d4\u05ea\u05d7\u05dc\u05d4 end!"},
 			{family: "Times", size: "18pt"}, "black", "red");
-		t3.transform = m.rotategAt(0, 250, 150);
 
 		t4 = makeText(surfaceRTL, {x: 0, y: 140, text: "1.) Beginning \u05e1\u05d5\u05e3!"},
 			{family: "Times", size: "18pt"}, "black", "red");
-		t4.transform = m.rotategAt(0, 250, 100);
 
-		surfaceAUTO = gfx.createSurface(createDiv(), 500, 170, "auto");
+		surfaceAUTO = tu.createSurface(500, 170, null, null, null, "auto");
 		console.debug("surfaceAUTO created");
 		new tu.Path({}, surfaceAUTO).moveTo(0, 15).setAbsoluteMode(false).curveTo(CPD, 0, 0, 0, 100, 0);
 
 		console.debug("p3 created");
 
-		tp5 = surfaceAUTO.createTextPath({
+		tp5 = new tu.TextPath({
 			text: "\u05d4\u05ea\u05d7\u05dc\u05d4 end. ",
 			align: "start"
 
 			//, rotated: true
-		})//.setShape(p.shape)
+		}, surfaceAUTO)//.setShape(p.shape)
 			.moveTo(0, 15).setAbsoluteMode(false).curveTo(CPD, 0, 100 - CPD, 0, 100, 0);
 
 		tp5.font = {family: "times", size: "12pt"};
 		tp5.fill = "red";
 
 		console.debug("tp5 created");
-		tp6 = surfaceAUTO.createTextPath({
+		tp6 = new tu.TextPath({
 			text: "Beginning \u05e1\u05d5\u05e3.",
 			align: "start"
 
 			//, rotated: true
-		})//.setShape(p.shape)
+		}, surfaceAUTO)//.setShape(p.shape)
 			.moveTo(0, 50).setAbsoluteMode(false).curveTo(CPD, 0, 100 - CPD, 0, 100, 0);
 		tp6.font = {family: "times", size: "12pt"};
 		tp6.fill = "blue";
@@ -140,17 +130,21 @@
 
 		t5 = makeText(surfaceAUTO, {id: "t1", x: 0, y: 100, text: "1.) \u05d4\u05ea\u05d7\u05dc\u05d4 end!"},
 			{family: "Times", size: "18pt"}, "black", "red");
-		t5.transform = m.rotategAt(0, 250, 150);
 
 		t6 = makeText(surfaceAUTO, {x: 0, y: 140, text: "1.) Beginning \u05e1\u05d5\u05e3!"},
 			{family: "Times", size: "18pt"}, "black", "blue");
-		t6.transform = m.rotategAt(0, 250, 100);
 	}
 
-	registerSuite({
+	tu.registerSuite({
 		name: "Bidi textDir",
 		setup: function () {
+			document.documentElement.setAttribute("dir", "rtl");
 			makeShapes();
+		},
+		teardown: function () {
+			if (!tu.visual) {
+				document.documentElement.setAttribute("dir", "");
+			}
 		},
 		"surfaces_TextDir": function () {
 			assert.equal(surfaceLTR.textDir, "ltr", "surfaceLTR.textDir");

@@ -1,6 +1,6 @@
 define([
 	"../_utils", "dcl/dcl", "dojo/_base/lang", "./_PathBase", "./_FontBase", "dojo/has",
-	"dojo/has!dojo-bidi?./bidi/_TextPath"
+	"dojo/has!bidi?./bidi/_TextPath"
 ], function (g, dcl, lang, Path, Font, has, BidiTextPath) {
 	var defaultShape = {
 		// summary:
@@ -40,10 +40,6 @@ define([
 		//		a generalized TextPath shape
 		shape: defaultShape,
 
-		// text: Object
-		//		The text to be drawn along the path
-		text: null,
-
 		constructor: function () {
 			// summary:
 			//		a TextPath shape constructor
@@ -60,23 +56,12 @@ define([
 				//		an SVG path string or a path object.
 				sup.apply(this, arguments);
 				this._setTextPath();
-				if (this.shape.text) {
-					this.text = this.shape.text;
-				}
+				this._setText();
 				return this;	// self
 			};
 		}),
-
-		_setTextAttr: function (newText) {
-			// summary:
-			//		sets a text to be drawn along the path
-			this._set("text", g._makeParameters(this._get("text") || lang.clone(defaultShape),
-				typeof newText === "string" ? {text: newText} : newText));
-			this._setText();
-			return this;	// self
-		}
 	});
-	if (has("dojo-bidi")) {
+	if (has("bidi")) {
 		TextPath = dcl([TextPath, BidiTextPath], {});
 		dcl.mix(defaultShape, {
 			// textDir: String

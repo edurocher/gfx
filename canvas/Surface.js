@@ -1,6 +1,6 @@
 define([
 	"dojo/_base/lang", "dcl/dcl", "dojo/dom", "dojo/dom-geometry", "../_utils", "../shape/_SurfaceBase", "./Container",
-	"dojo/has", "dojo/has!dojo-bidi?./bidi/Surface"
+	"dojo/has", "dojo/has!bidi?./bidi/Surface"
 ], function (lang, dcl, dom, domGeom, g, SurfaceBase, Container, has, BidiSurface) {
 	var Surface = dcl([SurfaceBase, Container], {
 		// summary:
@@ -186,5 +186,5 @@ define([
 			return this.rawNode.getContext("2d");
 		}
 	});
-	return has("dojo-bidi") ? dcl([Surface, BidiSurface], {}) : Surface;
+	return has("bidi") ? dcl([Surface, BidiSurface], {}) : Surface;
 });

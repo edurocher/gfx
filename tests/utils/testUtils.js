@@ -32,8 +32,8 @@ define([
 
 	var surfacesOnScreen = [];
 
-	var createSurface = function (width, height, r, key, title) {
-		var node = document.createElement("div");
+	var createSurface = function (width, height, r, key, title, textDir, node) {
+		node = node || document.createElement("div");
 		r = renderer || r || "svg";
 		if (visual) {
 			var tr, td;
@@ -74,7 +74,7 @@ define([
 		} else {
 			document.body.appendChild(node);
 		}
-		var surface = new renderers[r].Surface(node, width, height);
+		var surface = new renderers[r].Surface(node, width, height, textDir);
 		if (visual) {
 			surfacesOnScreen.push(surface);
 		}
@@ -363,6 +363,7 @@ define([
 		clear: clear,
 		addTitle: addTitle,
 		checkEmpty: checkEmpty,
+		visual: visual,
 
 		getRendererClass: function (name) {
 			return require(renderers[tu.renderer].prefix + name);

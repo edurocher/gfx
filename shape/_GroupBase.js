@@ -1,4 +1,4 @@
-define(["dcl/dcl", "./_ShapeBase", "./_ContainerBase", "dojo/has", "dojo/has!dojo-bidi?./bidi/_Group"],
+define(["dcl/dcl", "./_ShapeBase", "./_ContainerBase", "dojo/has", "dojo/has!bidi?./bidi/_Group"],
 	function (dcl, Shape, Container, has, BidiGroup) {
 		var Group = dcl([Shape, Container], {
 			// summary:
@@ -15,5 +15,5 @@ define(["dcl/dcl", "./_ShapeBase", "./_ContainerBase", "dojo/has", "dojo/has!doj
 				};
 			})
 		});
-		return has("dojo-bidi") ? dcl([Group, BidiGroup], {}) : Group;
+		return has("bidi") ? dcl([Group, BidiGroup], {}) : Group;
 	});

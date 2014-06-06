@@ -1,5 +1,5 @@
 define([
-	"dcl/dcl", "./Shape", "../shape/_TextPathBase", "dojo/has", "dojo/has!dojo-bidi?./bidi/TextPath"
+	"dcl/dcl", "./Shape", "../shape/_TextPathBase", "dojo/has", "dojo/has!bidi?./bidi/TextPath"
 ], function (dcl, CanvasShape, TextPathBase, has, CanvasBidiTextPath) {
 	var TextPath = dcl([CanvasShape, TextPathBase], {
 		// summary:
@@ -17,5 +17,5 @@ define([
 			// not implemented
 		}
 	});
-	return has("dojo-bidi") ? dcl([TextPath, CanvasBidiTextPath], {}) : TextPath;
+	return has("bidi") ? dcl([TextPath, CanvasBidiTextPath], {}) : TextPath;
 });

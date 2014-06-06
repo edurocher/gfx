@@ -9,6 +9,10 @@ define(["dcl/dcl", "../../_bidi"], function (dcl, bidi) {
 		//		3. "auto" - base direction is contextual (defined by first strong character).
 		textDir: "",
 
+		constructor: function () {
+			this.textDir =  this._get("shape").textDir || this._get("textDir");
+		},
+
 		formatText: function (/*String*/text, /*String*/textDir) {
 			// summary:
 			//		Applies the right transform on text, according to renderer.
@@ -65,8 +69,13 @@ define(["dcl/dcl", "../../_bidi"], function (dcl, bidi) {
 		_setParent: dcl.superCall(function (sup) {
 			return function (parent) {
 				sup.apply(this, arguments);
-				this.text = bidi.textDirPreprocess.call(parent, this._get("text"));
+				this.shape = bidi.textDirPreprocess.call(parent, this._get("shape"));
 			};
-		})
+		}),
+
+		_setTextDir: function (tDir) {
+			// summary: Called by _Container to propagate textDir to children.
+			this.shape = {textDir: tDir};
+		}
 	});
 });

@@ -1,6 +1,6 @@
 define([
 	"dcl/dcl", "../_utils", "./_utils", "./Shape", "../shape/_TextPathBase", "./Font", "dojo/has",
-	"dojo/has!dojo-bidi?./bidi/TextPath"
+	"dojo/has!bidi?./bidi/TextPath"
 ], function (dcl, g, svg, SvgShape, TextPathBase, Font, has, SvgBidiTextPath) {
 	var TextPath = dcl([SvgShape, TextPathBase, Font], {
 		// summary:
@@ -16,7 +16,8 @@ define([
 			};
 		}),
 		_setTextPath: function () {
-			if (typeof this.shape.path !== "string") {
+			var s = this._get("shape");
+			if (typeof s.path !== "string") {
 				return;
 			}
 			var r = this.rawNode;
@@ -38,7 +39,11 @@ define([
 				}
 			}
 			if (path) {
-				path.setAttribute("d", this.shape.path);
+				if (s.path) {
+					path.setAttribute("d", s.path);
+				} else {
+					path.removeAttribute("d");
+				}
 			}
 		},
 		_setText: function () {
@@ -49,7 +54,7 @@ define([
 				r.appendChild(tp);
 			}
 			r = r.firstChild;
-			var t = this._get("text");
+			var t = this._get("shape");
 			r.setAttribute("alignment-baseline", "middle");
 			switch (t.align) {
 			case "middle":
@@ -74,7 +79,7 @@ define([
 			r.firstChild.data = t.text;
 		}
 	});
-	if (has("dojo-bidi")) {
+	if (has("bidi")) {
 		TextPath = dcl([TextPath, SvgBidiTextPath], {});
 	}
 	TextPath.nodeType = "text";

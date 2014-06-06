@@ -1,5 +1,5 @@
 define([
-	"dcl/dcl", "../matrix", "dojo/has", "dojo/has!dojo-bidi?./bidi/_Container"
+	"dcl/dcl", "../matrix", "dojo/has", "dojo/has!bidi?./bidi/_Container"
 ], function (dcl, matrixLib, has, BidiContainer) {
 	var Container = dcl(null, {
 		// summary:
@@ -49,7 +49,8 @@ define([
 				oldParent.remove(shape, true);
 			}
 			this.children.push(shape);
-			return shape._setParent(this, this._getRealMatrix());	// self
+			shape._setParent(this, this._getRealMatrix());
+			return shape;
 		},
 		remove: function (shape, silently) {
 			// summary:
@@ -158,5 +159,5 @@ define([
 			return this;	// self
 		}
 	});
-	return has("dojo-bidi") ? dcl([Container, BidiContainer], {}) : Container;
+	return has("bidi") ? dcl([Container, BidiContainer], {}) : Container;
 });
